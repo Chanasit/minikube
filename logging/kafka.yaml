@@ -1,0 +1,47 @@
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmRepository
+metadata:
+  name: kafka
+  namespace: logging
+spec:
+  interval: 120m
+  url: https://charts.bitnami.com/bitnami
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: kafka
+  namespace: logging
+  annotations:
+    fluxcd.io/automated: "false"
+spec:
+  interval: 1h0m0s
+  releaseName: kafka
+  chart:
+    spec:
+      version: "25.0.0"
+      chart: kafka
+      sourceRef:
+        kind: HelmRepository
+        name: kafka
+        namespace: logging
+  values:
+    ## Zookeeper configuration
+    zookeeper:
+      enabled: false
+      replicaCount: 2
+      persistence:
+        enabled: true
+        size: 5Gi
+
+    ## External access configuration
+    externalAccess:
+      enabled: false
+      service:
+        type: LoadBalancer
+
+    ## Other global configurations
+    # global:
+    #   imageRegistry: myregistry.com
+    #   imagePullSecrets:
+    #     - name: myregistrysecret
