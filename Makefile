@@ -1,10 +1,10 @@
 export OSTYPE = $(shell uname)
 
 install: ## install
-	kubectl apply -k ./logging
+	kubectl apply -k .
 
 uninstall: ## delete
-	kubectl delete -k ./logging
+	kubectl delete -k .
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
