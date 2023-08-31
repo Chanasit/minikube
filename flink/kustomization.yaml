@@ -3,3 +3,4 @@ kind: Kustomization
 namespace: flink
 resources:
   - namespace.yaml
+  - ./application

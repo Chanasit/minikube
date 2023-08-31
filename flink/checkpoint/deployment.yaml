@@ -1,0 +1,48 @@
+apiVersion: flink.apache.org/v1beta1
+kind: FlinkDeployment
+metadata:
+  name: basic-checkpoint-ha-example
+spec:
+  image: flink:1.17
+  flinkVersion: v1_17
+  flinkConfiguration:
+    scheduler-mode: REACTIVE
+    taskmanager.numberOfTaskSlots: "2"
+    state.savepoints.dir: file:///tmp/flink/savepoints
+    state.checkpoints.dir: file:///tmp/flink/checkpoints
+    high-availability.type: KUBERNETES
+    high-availability.storageDir: file:///tmp/flink/ha
+    kubernetes.taskmanager.cpu: "0.5"
+    kubernetes.jobmanager.cpu: "0.5"
+  serviceAccount: flink
+  jobManager:
+    resource:
+      memory: "2048m"
+      cpu: 0.5
+  taskManager:
+    resource:
+      memory: "2048m"
+      cpu: 0.5
+  # podTemplate:
+  #   spec:
+  #     securityContext:
+  #       fsGroup: 9999
+  #     containers:
+  #       - name: flink-main-container
+  #         volumeMounts:
+  #         - mountPath: /flink-data
+  #           name: flink-volume
+  #     volumes:
+  #     - name: flink-volume
+  #       hostPath:
+  #         # directory location on host
+  #         path: /tmp/flink
+  #         # this field is optional
+  #         # type: Directory
+  job:
+    jarURI: local:///opt/flink/examples/streaming/StateMachineExample.jar
+    parallelism: 2
+    upgradeMode: savepoint
+    state: running
+    savepointTriggerNonce: 0
+  mode: standalone
