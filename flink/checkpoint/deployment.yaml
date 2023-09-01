@@ -6,6 +6,8 @@ spec:
   image: flink:1.17
   flinkVersion: v1_17
   flinkConfiguration:
+    state.backend: rocksdb
+    state.backend.incremental: "true"
     scheduler-mode: REACTIVE
     taskmanager.numberOfTaskSlots: "2"
     state.savepoints.dir: file:///tmp/flink/savepoints
