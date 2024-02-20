@@ -1,0 +1,38 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmRepository
+metadata:
+  name: projectcalico
+  namespace: calico-system
+spec:
+  interval: 1h
+  url: https://projectcalico.docs.tigera.io/charts
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: calico
+  namespace: calico-system
+spec:
+  interval: 5m
+  chart:
+    spec:
+      version: "3.27.0"
+      chart: tigera-operator
+      sourceRef:
+        kind: HelmRepository
+        name: projectcalico
+      interval: 60m
+  install:
+    crds: Create
+  upgrade:
+    crds: CreateReplace
+  values:
+    installation:
+      cni:
+        type: Calico
+      calicoNetwork:
+        bgp: Disabled
+        ipPools:
+        - cidr: 10.123.0.0/16
+          encapsulation: VXLAN

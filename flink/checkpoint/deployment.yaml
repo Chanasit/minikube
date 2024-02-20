@@ -8,6 +8,8 @@ spec:
   flinkConfiguration:
     state.backend: rocksdb
     state.backend.incremental: "true"
+    state.backend.rocksdb.memory.write-buffer-ratio: "0.5"
+    state.backend.rocksdb.memory.high-prio-pool-ratio: "0.1"
     scheduler-mode: REACTIVE
     taskmanager.numberOfTaskSlots: "2"
     state.savepoints.dir: file:///tmp/flink/savepoints

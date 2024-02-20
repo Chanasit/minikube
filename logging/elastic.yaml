@@ -4,7 +4,7 @@ metadata:
   name: elasticsearch
   namespace: logging
 spec:
-  interval: 120m
+  interval: 1h
   url: https://helm.elastic.co
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
@@ -31,8 +31,8 @@ spec:
       xpack.monitoring.collection.interval: 60s
       xpack.watcher.enabled: true
       xpack.security.enabled: false
-      # xpack.security.http.ssl.enabled: true
-      # xpack.security.transport.ssl.enabled: true
+      xpack.security.http.ssl.enabled: false
+      xpack.security.transport.ssl.enabled: false
     image: "docker.elastic.co/elasticsearch/elasticsearch"
     imageTag: "7.17.3"
     imagePullPolicy: "IfNotPresent"

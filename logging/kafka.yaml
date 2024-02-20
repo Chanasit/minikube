@@ -4,7 +4,7 @@ metadata:
   name: kafka
   namespace: logging
 spec:
-  interval: 120m
+  interval: 1h
   url: https://charts.bitnami.com/bitnami
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
