@@ -6,5 +6,4 @@ resources:
   - kafka.yaml
   - kafka-ui.yaml
   - fluentbit.yaml
-  # - elastic.yaml
-  # - kibana.yaml
+  - random-logger.yaml

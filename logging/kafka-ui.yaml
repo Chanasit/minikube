@@ -168,10 +168,8 @@ spec:
       # Http paths to add to the Ingress after the default path
       succeedingPaths: []
 
-    resources:
-      {}
+    resources: {}
       # limits:
-      #   cpu: 200m
       #   memory: 512Mi
       # requests:
       #   cpu: 200m
@@ -180,7 +178,7 @@ spec:
     autoscaling:
       enabled: false
       minReplicas: 1
-      maxReplicas: 100
+      maxReplicas: 2
       targetCPUUtilizationPercentage: 80
       # targetMemoryUtilizationPercentage: 80
 

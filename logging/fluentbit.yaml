@@ -396,22 +396,26 @@ spec:
             storage.sync              normal
             storage.checksum          off
             storage.backlog.mem_limit 5M
+            storage.max_chunks_up     128
+            storage.metrics           on
+            storage.delete_irrecoverable_chunks on
 
       ## https://docs.fluentbit.io/manual/pipeline/inputs
       inputs: |
         [INPUT]
-            Name systemd
-            Tag host.*
-            Systemd_Filter _SYSTEMD_UNIT=kubelet.service
-            Read_From_Tail On
+            Name              systemd
+            Tag               host.*
+            Systemd_Filter    _SYSTEMD_UNIT=kubelet.service
+            Read_From_Tail    On
+            storage.type      filesystem
 
         [INPUT]
-            Name tail
-            Path /var/log/containers/*.log
-            Parser  cri
-            Tag kube.*
+            Name              tail
+            Path              /var/log/containers/*.log
+            Parser            cri
+            Tag               kube.*
             Skip_Long_Lines   On
-            Refresh_Interval  15
+            Refresh_Interval  60
             Mem_Buf_Limit     5MB
             Buffer_Chunk_Size 256KB
             Buffer_Max_Size   512KB
@@ -422,9 +426,8 @@ spec:
         [FILTER]
             Name                modify
             Match               *
-            Rename              message content
-            Rename              log     content
-            Set                 env     nonprod
+            Rename              message msg
+            Rename              log     msg
         [FILTER]
             Name                kubernetes
             Match               kube.*
@@ -434,7 +437,7 @@ spec:
             Labels              Off
             K8S-Logging.Parser  Off
             K8S-Logging.Exclude Off
-            Buffer_Size         1024KB
+            Buffer_Size         4096KB
         [FILTER]
             Name                nest
             Match               kube.*
@@ -451,6 +454,7 @@ spec:
             Topics                                          logstash
             Timestamp_Key                                   @timestamp
             Timestamp_Format                                iso8601
+            Format                                          json
             rdkafka.log_level                               7
             rdkafka.metadata.broker.list                    kafka:9092
             rdkafka.compression.codec                       snappy
@@ -465,13 +469,6 @@ spec:
             rdkafka.log.connection.close                    false
             rdkafka.request.required.acks                   1
             rdkafka.queue.buffering.max.kbytes              10240
-        # [OUTPUT]
-        #     Name es
-        #     Match host.*
-        #     Host elasticsearch-master
-        #     Logstash_Format On
-        #     Logstash_Prefix node
-        #     Retry_Limit False
 
       ## https://docs.fluentbit.io/manual/administration/configuring-fluent-bit/classic-mode/upstream-servers
       ## This configuration is deprecated, please use `extraFiles` instead.
@@ -552,7 +549,7 @@ spec:
     #     image: bitnami/kubectl:{{ .Capabilities.KubeVersion.Major }}.{{ .Capabilities.KubeVersion.Minor }}
     #     command: ['kubectl', 'version']
 
-    logLevel: info
+    logLevel: error
 
     hotReload:
       enabled: false
