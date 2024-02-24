@@ -7,7 +7,7 @@ spec:
   interval: 1h
   url: https://helm.elastic.co
 ---
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
+apiVersion: helm.toolkit.fluxcd.io/v2beta2
 kind: HelmRelease
 metadata:
   name: elasticsearch
@@ -53,7 +53,6 @@ spec:
         cpu: "200m"
         memory: "0.5G"
       limits:
-        cpu: "500m"
         memory: "1G"
     keystore: {}
     # - secretName: ""
@@ -73,8 +72,8 @@ spec:
               # Authorized to GCS
               # Create snapshot policy AKA slm
               # curl -X POST -H 'Content-Type: application/json' "localhost:9200/_nodes/reload_secure_settings?pretty"
-              # curl -X PUT -H "Content-Type: application/json" -d '{ "type": "gcs", "settings": { "bucket": "logging-chaos-backups" } }' "localhost:9200/_snapshot/logging-chaos-backups"
-              # curl -X PUT -H 'Content-Type: application/json' -d '{ "schedule": "0 0 0 * * ?", "name": "<daily-snapshots-{now/d}>", "repository": "logging-chaos-backups", "config": { "indices": ["logstash-*"], "ignore_unavailable": false, "include_global_state": false }, "retention": { "expire_after": "30d", "min_count": 5, "max_count": 20 } }' "localhost:9200/_slm/policy/daily-snapshots?pretty"
+              # curl -X PUT -H "Content-Type: application/json" -d '{ "type": "gcs", "settings": { "bucket": "logging-backups" } }' "localhost:9200/_snapshot/logging-backups"
+              # curl -X PUT -H 'Content-Type: application/json' -d '{ "schedule": "0 0 0 * * ?", "name": "<daily-snapshots-{now/d}>", "repository": "logging-backups", "config": { "indices": ["logstash-*"], "ignore_unavailable": false, "include_global_state": false }, "retention": { "expire_after": "30d", "min_count": 5, "max_count": 20 } }' "localhost:9200/_slm/policy/daily-snapshots?pretty"
               # # Create index policy AKA ilm
               # curl -X PUT -H "Content-Type: application/json" -d '{ "policy": { "phases": { "hot": { "min_age": "0ms", "actions": { "rollover": { "max_primary_shard_size": "20gb", "max_age": "7d" } } }, "warm": { "min_age": "2d", "actions": { "shrink": { "number_of_shards": 1 }, "forcemerge": { "max_num_segments": 1 } } }, "delete": { "min_age": "7d", "actions": { "delete": { "delete_searchable_snapshot": true }, "wait_for_snapshot": { "policy": "daily-snapshots" } } } }, "_meta": { "managed": true, "description": "" } } }' "localhost:9200/_ilm/policy/daily-snapshots"
               # # Create index pattern

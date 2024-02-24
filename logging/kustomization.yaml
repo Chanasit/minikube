@@ -3,7 +3,8 @@ kind: Kustomization
 namespace: logging
 resources:
   - namespace.yaml
-  # - kafka.yaml
+  - kafka.yaml
+  - kafka-ui.yaml
+  - fluentbit.yaml
   # - elastic.yaml
   # - kibana.yaml
-  # - fluentbit.yaml
