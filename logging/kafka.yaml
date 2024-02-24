@@ -273,7 +273,7 @@ spec:
       client:
         users:
           - user1
-        passwords: ""
+        passwords: "F3yDMYS0be"
       ## Credentials for Zookeeper communications.
       ## @param sasl.zookeeper.user Username for zookeeper communications when SASL is enabled.
       ## @param sasl.zookeeper.password Password for zookeeper communications when SASL is enabled.
@@ -490,7 +490,7 @@ spec:
       ## @param controller.replicaCount Number of Kafka controller-eligible nodes
       ## Ignore this section if running in Zookeeper mode.
       ##
-      replicaCount: 3
+      replicaCount: 2
       ## @param controller.controllerOnly If set to true, controller nodes will be deployed as dedicated controllers, instead of controller+broker processes.
       ##
       controllerOnly: false
