@@ -412,15 +412,18 @@ spec:
         [INPUT]
             Name              tail
             Path              /var/log/containers/*.log
+            Exclude_Path      /var/log/containers/kafka-ui*, /var/log/containers/fluentbit*, /var/log/containers/kube-proxy*
             Parser            docker_no_time
             Tag               kube.*
-            Refresh_Interval  10
+            Docker_Mode       On
             Buffer_Chunk_Size 256KB
             Buffer_Max_Size   512KB
-            storage.type      filesystem
-            Docker_Mode       On
+            DB                /var/log/flb-storage/state.db
             Mem_Buf_Limit     50MB
             Skip_Long_Lines   On
+            Refresh_Interval  15
+            Rotate_Wait       30
+            storage.type      filesystem
 
       ## https://docs.fluentbit.io/manual/pipeline/filters
       filters: |
@@ -436,8 +439,8 @@ spec:
             Merge_Log_Trim      On
             Keep_Log            Off
             Labels              Off
-            K8S-Logging.Parser  Off
-            K8S-Logging.Exclude Off
+            K8S-Logging.Parser  On
+            K8S-Logging.Exclude On
             Buffer_Size         4096KB
         [FILTER]
             Name                nest
