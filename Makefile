@@ -1,9 +1,24 @@
 export OSTYPE = $(shell uname)
 
-install: ## install
-	kubectl apply -k .
+log: ## install log module
+	kubectl apply -k ./logging
 
-uninstall: ## delete
+flink: ## install flink module
+	kubectl apply -k ./flink-system
+
+calico: ## install calico module
+	kubectl apply -k ./calico-system
+
+elastic: ## install elastic module
+	kubectl apply -k ./elastic-system
+
+istio: ## install istio module
+	kubectl apply -k ./istio-system
+
+flux: ## install flux module
+	kubectl apply -k ./flux-system
+
+uninstall: ## uninstall all modules
 	kubectl delete -k .
 
 help:

@@ -17,12 +17,13 @@ $ minikube start
 $ flux install
 ```
 
-## Install Helm Release
+## Makefile scripts
 ```
-$ make install
-```
-
-## Cleanup
-```
-$ make uninstall
+calico                         install calico module
+elastic                        install elastic module
+flink                          install flink module
+flux                           install flux module
+istio                          install istio module
+log                            install log module
+uninstall                      uninstall all modules
 ```
