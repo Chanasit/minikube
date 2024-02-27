@@ -462,6 +462,7 @@ spec:
             rdkafka.log_level                               7
             rdkafka.metadata.broker.list                    kafka:9092
             rdkafka.compression.codec                       snappy
+            rdkafka.allow.auto.create.topics                false
             rdkafka.max.in.flight.requests.per.connection   5
             rdkafka.batch.num.messages                      1000
             rdkafka.batch.size                              1000000
