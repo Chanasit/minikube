@@ -7,3 +7,4 @@ resources:
   - ./istio-system
   - ./flux-system
   - ./calico-system
+  - ./redis-system

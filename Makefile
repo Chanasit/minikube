@@ -12,11 +12,17 @@ calico: ## install calico module
 elastic: ## install elastic module
 	kubectl apply -k ./elastic-system
 
+redis: ## install redis module
+	kubectl apply -k ./redis-system
+
 istio: ## install istio module
 	kubectl apply -k ./istio-system
 
 flux: ## install flux module
 	kubectl apply -k ./flux-system
+
+debug: ## install debuging
+	kubectl run -i --tty temp -n redis-system --image=busybox --restart=Never -- sh
 
 uninstall: ## uninstall all modules
 	kubectl delete -k .
