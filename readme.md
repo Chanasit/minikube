@@ -25,5 +25,6 @@ flink                          install flink module
 flux                           install flux module
 istio                          install istio module
 log                            install log module
+redis                          install redis module
 uninstall                      uninstall all modules
 ```
