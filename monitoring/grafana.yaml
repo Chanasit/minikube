@@ -2,7 +2,7 @@ apiVersion: source.toolkit.fluxcd.io/v1beta2
 kind: HelmRepository
 metadata:
   name: grafana
-  namespace: logging
+  namespace: monitoring
 spec:
   interval: 1h
   url: https://grafana.github.io/helm-charts
@@ -11,7 +11,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta2
 kind: HelmRelease
 metadata:
   name: grafana
-  namespace: logging
+  namespace: monitoring
   annotations:
     fluxcd.io/automated: "false"
 spec:
@@ -24,7 +24,7 @@ spec:
       sourceRef:
         kind: HelmRepository
         name: grafana
-        namespace: logging
+        namespace: monitoring
   install:
     crds: Create
   upgrade:
@@ -250,13 +250,13 @@ spec:
       #    hosts:
       #      - chart-example.local
 
-    resources:
-      limits:
-        cpu: 100m
-        memory: 128Mi
-      requests:
-        cpu: 100m
-        memory: 128Mi
+    resources: {}
+    #  limits:
+    #    cpu: 100m
+    #    memory: 128Mi
+    #  requests:
+    #    cpu: 100m
+    #    memory: 128Mi
 
     ## Node labels for pod assignment
     ## ref: https://kubernetes.io/docs/user-guide/node-selection/
@@ -357,13 +357,13 @@ spec:
 
     # Administrator credentials when not using an existing secret (see below)
     adminUser: admin
-    adminPassword: strongpassword
+    # adminPassword: strongpassword
 
     # Use an existing secret for the admin user.
-    # admin:
-    #   existingSecret: ""
-    #   userKey: admin-user
-    #   passwordKey: admin-password
+    admin:
+      existingSecret: ""
+      userKey: admin-user
+      passwordKey: admin-password
 
     ## Define command to be executed at startup by grafana container
     ## Needed if using `vault-env` to manage secrets (ref: https://banzaicloud.com/blog/inject-secrets-into-pods-vault/)
@@ -499,6 +499,19 @@ spec:
           jsonData:
             maxLines: 200
             timeout: 5
+        - name: Prometheus
+          type: prometheus
+          access: proxy
+          # Access mode - proxy (server in the UI) or direct (browser in the UI).
+          url: http://prometheus-server:80
+          jsonData:
+            httpMethod: POST
+            manageAlerts: true
+            prometheusType: Prometheus
+            prometheusVersion: 2.50.1
+            cacheLevel: 'High'
+            disableRecordingRules: false
+            incrementalQueryOverlapWindow: 10m
 
     ## Configure notifiers
     ## ref: http://docs.grafana.org/administration/provisioning/#alert-notification-channels

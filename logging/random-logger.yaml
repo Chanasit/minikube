@@ -3,6 +3,7 @@ kind: Deployment
 metadata:
   name: random-logger
 spec:
+  replicas: 3
   selector:
     matchLabels:
       app: random-logger
