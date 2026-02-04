@@ -57,17 +57,6 @@ provider "flux" {
 
 }
 
-resource "github_repository" "this" {
-  name        = "minikube"
-  description = "GitOps repo for Flux"
-  visibility  = "public" # or public
-  auto_init   = true
-
-  lifecycle {
-    prevent_destroy = true
-  }
-}
-
 resource "flux_bootstrap_git" "this" {
   path     = "clusters/apps" # folder in repo where Flux will look
   interval = "1m"
