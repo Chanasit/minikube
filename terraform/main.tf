@@ -22,19 +22,10 @@ provider "minikube" {
   kubernetes_version = "v1.35"
 }
 
-# resource "minikube_cluster" "docker" {
-#   driver       = "docker"
-#   cluster_name = "terraform-provider-minikube-acc-docker"
-#   addons = [
-#     "default-storageclass",
-#     "storage-provisioner"
-#   ]
-# }
-
 resource "minikube_cluster" "orb" {
   vm           = true
   driver       = "docker"
-  cluster_name = "orb-minikube"
+  cluster_name = "orbstack"
   nodes        = 1
   cni          = "bridge" # Allows pods to communicate with each other via DNS
   addons = [
@@ -44,10 +35,6 @@ resource "minikube_cluster" "orb" {
 }
 
 provider "kubernetes" {
-  # host                   = minikube_cluster.orb.host
-  # client_certificate     = minikube_cluster.orb.client_certificate
-  # client_key             = minikube_cluster.orb.client_key
-  # cluster_ca_certificate = minikube_cluster.orb.cluster_ca_certificate
   config_path    = pathexpand("~/.kube/config")
   config_context = minikube_cluster.orb.cluster_name
 }
@@ -75,6 +62,10 @@ resource "github_repository" "this" {
   description = "GitOps repo for Flux"
   visibility  = "public" # or public
   auto_init   = true
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "flux_bootstrap_git" "this" {
