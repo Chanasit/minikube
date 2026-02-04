@@ -19,7 +19,7 @@ spec:
   releaseName: kafka
   chart:
     spec:
-      version: "26.11.3"
+      version: "32.4.3"
       chart: kafka
       sourceRef:
         kind: HelmRepository

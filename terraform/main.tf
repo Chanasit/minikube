@@ -19,13 +19,15 @@ terraform {
   }
 }
 provider "minikube" {
-  kubernetes_version = "v1.35"
+  kubernetes_version = "v1.35.0"
 }
 
-resource "minikube_cluster" "orb" {
+resource "minikube_cluster" "orbstack" {
   vm           = true
   driver       = "docker"
   cluster_name = "orbstack"
+  cpus         = "6"
+  memory       = "12g"
   nodes        = 1
   cni          = "bridge" # Allows pods to communicate with each other via DNS
   addons = [
@@ -36,14 +38,14 @@ resource "minikube_cluster" "orb" {
 
 provider "kubernetes" {
   config_path    = pathexpand("~/.kube/config")
-  config_context = minikube_cluster.orb.cluster_name
+  config_context = minikube_cluster.orbstack.cluster_name
 }
 
 provider "github" {}
 provider "flux" {
   kubernetes = { # ← Add this block to satisfy the validation
     config_path    = pathexpand("~/.kube/config")
-    config_context = minikube_cluster.orb.cluster_name
+    config_context = minikube_cluster.orbstack.cluster_name
   }
   git = {
     url    = "https://github.com/Chanasit/minikube.git"
