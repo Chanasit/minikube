@@ -105,8 +105,8 @@ spec:
     ##
     image:
       registry: docker.io
-      repository: bitnami/kafka
-      tag: 3.6.1-debian-12-r12
+      repository: bitnamilegacy/kafka
+      tag: 3.6.1-debian-12-r12   # or whatever exact legacy tag you need
       digest: ""
       ## Specify a imagePullPolicy
       ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
