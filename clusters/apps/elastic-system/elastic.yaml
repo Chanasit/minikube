@@ -45,7 +45,7 @@ spec:
       resources:
         requests:
           storage: 10Gi
-    replicas: 3
+    replicas: 1
     antiAffinity: "soft"
     esJavaOpts: "-Xmx256m -Xms256m"
     resources:

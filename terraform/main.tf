@@ -19,7 +19,7 @@ terraform {
   }
 }
 provider "minikube" {
-  kubernetes_version = "v1.30.2"
+  kubernetes_version = "v1.35"
 }
 
 # resource "minikube_cluster" "docker" {
@@ -38,9 +38,7 @@ resource "minikube_cluster" "orb" {
   nodes        = 1
   cni          = "bridge" # Allows pods to communicate with each other via DNS
   addons = [
-    "dashboard",
     "default-storageclass",
-    "ingress",
     "storage-provisioner"
   ]
 }
@@ -80,10 +78,10 @@ resource "github_repository" "this" {
 }
 
 resource "flux_bootstrap_git" "this" {
-  path             = "clusters/apps" # folder in repo where Flux will look
-  interval         = "1m"
-  version          = "v2.4.0"                                                      # optional: pin Flux version
-  components_extra = ["image-reflector-controller", "image-automation-controller"] # if needed
+  path     = "clusters/apps" # folder in repo where Flux will look
+  interval = "1m"
+  version  = "v2.4.0" # optional: pin Flux version
+  # components_extra = ["image-reflector-controller", "image-automation-controller"] # if needed
 }
 
 # Optional: secure PAT via variable (recommended)
