@@ -23,3 +23,80 @@
 
 # Go workspace file
 go.work
+
+# =============================================
+# Terraform-specific ignores (official GitHub template + HashiCorp recommendations)
+# =============================================
+
+# Local .terraform directories (providers, modules cache)
+**/.terraform/
+**/.terraform/*
+
+# .terraform.lock.hcl - lock file should usually NOT be committed in simple/local projects
+#   → commit it only in shared modules repos or when you want exact provider version pinning across team
+.terraform.lock.hcl
+
+# State files - NEVER commit these (use remote backend like S3, Terraform Cloud, etc.)
+*.tfstate
+*.tfstate.*
+terraform.tfstate
+terraform.tfstate.backup
+
+# Crash logs from terraform
+crash.log
+crash.*.log
+
+# Ignore override files (usually local debugging)
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# CLI config files (credentials, etc.)
+.terraformrc
+terraform.rc
+
+# Local variable files (often contain secrets or env-specific values)
+*.tfvars
+*.tfvars.json
+!example.tfvars          # optional: keep example files if you have them
+!terraform.tfvars.example
+
+# Plan files (can contain sensitive data)
+*.tfplan
+
+# =============================================
+# General ignores for your project
+# =============================================
+
+# macOS / editor junk
+.DS_Store
+*.swp
+*~
+.vscode/
+.idea/
+
+# Local Minikube / kubeconfig (never commit cluster creds/contexts)
+minikube/
+.kubeconfig
+kubeconfig.yaml
+*.kubeconfig
+
+# Flux bootstrap / generated manifests (if you don't want them versioned here)
+#   → usually you DO commit flux-system/ files after bootstrap, so only ignore temp stuff
+flux-system/temp/
+
+# Logs, backups, temp files
+*.log
+*.bak
+*.backup
+*.tmp
+
+# Make / build artifacts if you use Makefile
+Makefile.*
+build/
+dist/
+
+# Keep this if you have large binaries or caches elsewhere
+*.zip
+*.tar.gz
