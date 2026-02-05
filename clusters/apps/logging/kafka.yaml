@@ -5,7 +5,8 @@ metadata:
   namespace: logging
 spec:
   interval: 1h
-  url: https://charts.bitnami.com/bitnami
+  type: oci                                 # ← this is the key change
+  url: oci://registry-1.docker.io/bitnamicharts  # ← base OCI repo (no /kafka here)
 
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2beta2
