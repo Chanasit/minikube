@@ -77,7 +77,7 @@ spec:
         KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
         KAFKA_CLUSTERS_0_PROPERTIES_SECURITY_PROTOCOL: SASL_PLAINTEXT
         KAFKA_CLUSTERS_0_PROPERTIES_SASL_MECHANISM: PLAIN
-        KAFKA_CLUSTERS_0_PROPERTIES_SASL_JAAS_CONFIG: 'org.apache.kafka.common.security.plain.PlainLoginModule required username="user1" password="F3yDMYS0be";'
+        KAFKA_CLUSTERS_0_PROPERTIES_SASL_JAAS_CONFIG: 'org.apache.kafka.common.security.plain.PlainLoginModule required username="app1" password="long-secret-app1-2026";'
 
     env: {}
 
