@@ -27,7 +27,7 @@ resource "minikube_cluster" "orbstack" {
   driver       = "docker"
   cluster_name = "orbstack"
   cpus         = "6"
-  memory       = "12g"
+  memory       = "16g"
   nodes        = 1
   cni          = "bridge" # Allows pods to communicate with each other via DNS
   addons = [
