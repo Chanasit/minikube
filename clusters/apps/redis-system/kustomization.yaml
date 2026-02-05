@@ -3,4 +3,4 @@ kind: Kustomization
 namespace: redis-system
 resources:
   - namespace.yaml
-  - redis.yaml
+  # - redis.yaml
