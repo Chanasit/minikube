@@ -537,8 +537,8 @@ spec:
                 type: sasl
                 sasl_config:
                   mechanism: PLAIN
-                  user: user1
-                  password: F3yDMYS0be
+                  user: app1
+                  password: long-secret-app1-2026
                   use_tls: false
                   insecure_skip_verify: false
             relabel_configs:
