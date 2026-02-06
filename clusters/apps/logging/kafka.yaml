@@ -38,8 +38,10 @@ spec:
 
     controller:
       replicaCount: 3                     # strongly recommended
+      quorumBootstrapServers: ""     # leave empty → chart auto-fills with all controller pods
       persistence:
-        size: 50Gi                        # adjust according to your workload
+        enabled: true
+        size: 50Gi
       heapOpts: "-Xmx4g -Xms4g"           # example – tune per node size
 
     broker:
