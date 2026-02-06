@@ -29,7 +29,7 @@ spec:
 
     kraft:
       enabled: true
-      # clusterId: "keep-the-same-value-after-first-install"   # very important!
+      clusterId: "keep-the-same-value-after-first-install"   # very important!
 
     image:
       registry: docker.io
