@@ -30,6 +30,7 @@ spec:
     kraft:
       enabled: true
       clusterId: "keep-the-same-value-after-first-install"   # very important!
+      version: 1                           # ← force dynamic quorum (bootstrap.servers, no static voters needed)
 
     image:
       registry: docker.io
