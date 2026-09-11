@@ -62,8 +62,8 @@ spec:
 
     sasl:
       enabledMechanisms: PLAIN,SCRAM-SHA-256,SCRAM-SHA-512
-      interBrokerMechanism: SCRAM-SHA-256     # more secure than PLAIN
-      controllerMechanism:  SCRAM-SHA-256
+      interBrokerMechanism: PLAIN
+      controllerMechanism:  PLAIN
 
       interbroker:
         user:     "internal"
