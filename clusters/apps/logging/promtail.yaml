@@ -27,8 +27,12 @@ spec:
         namespace: logging
   install:
     crds: Create
+    remediation:
+      retries: 3
   upgrade:
     crds: CreateReplace
+    remediation:
+      retries: 3
   values:
     # -- Overrides the chart's name
     nameOverride: null
@@ -430,7 +434,7 @@ spec:
       # -- The log level of the Promtail server
       # Must be reference in `config.file` to configure `server.log_level`
       # See default config in `values.yaml`
-      logLevel: error
+      logLevel: info
       # -- The log format of the Promtail server
       # Must be reference in `config.file` to configure `server.log_format`
       # Valid formats: `logfmt, json`
