@@ -100,3 +100,11 @@ dist/
 # Keep this if you have large binaries or caches elsewhere
 *.zip
 *.tar.gz
+
+# Local env files holding TF_VAR_* secrets (token, etc.) — never commit
+.env
+.env.*
+!.env.example
+.envrc
+.github_token
+*_token

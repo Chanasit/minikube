@@ -41,7 +41,9 @@ provider "kubernetes" {
   config_context = minikube_cluster.orbstack.cluster_name
 }
 
-provider "github" {}
+provider "github" {
+  token = var.github_token
+}
 provider "flux" {
   kubernetes = { # ← Add this block to satisfy the validation
     config_path    = pathexpand("~/.kube/config")
@@ -62,7 +64,7 @@ provider "flux" {
 resource "flux_bootstrap_git" "this" {
   path     = "clusters/apps" # folder in repo where Flux will look
   interval = "1m"
-  version  = "v2.4.0" # optional: pin Flux version
+  version  = "v2.9.5" # optional: pin Flux version
   # components_extra = ["image-reflector-controller", "image-automation-controller"] # if needed
 }
 
