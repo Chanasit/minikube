@@ -25,6 +25,14 @@ spec:
         kind: HelmRepository
         name: kafka-ui
         namespace: logging
+  install:
+    crds: Create
+    remediation:
+      retries: 3
+  upgrade:
+    crds: CreateReplace
+    remediation:
+      retries: 3
   values:
 
     replicaCount: 1

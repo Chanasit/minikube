@@ -25,6 +25,14 @@ spec:
         kind: HelmRepository
         name: fluent-bit
         namespace: logging
+  install:
+    crds: Create
+    remediation:
+      retries: 3
+  upgrade:
+    crds: CreateReplace
+    remediation:
+      retries: 3
   values:
     # Default values for fluent-bit.
 

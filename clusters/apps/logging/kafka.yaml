@@ -16,6 +16,15 @@ metadata:
   namespace: logging
 spec:
   interval: 1h
+  timeout: 10m
+  install:
+    crds: Create
+    remediation:
+      retries: 3
+  upgrade:
+    crds: CreateReplace
+    remediation:
+      retries: 3
   chart:
     spec:
       chart: kafka
@@ -92,13 +101,14 @@ spec:
 
     provisioning:
       enabled: true
+      waitForKafka: true
       topics:
         - name: logstash
-          partitions: 8
+          partitions: 3
           replicationFactor: 3          # match number of data nodes
           config:
-            retention.ms: 604800000     # 7 days
-            min.insync.replicas: 2
+            retention.ms: "604800000"     # 7 days
+            min.insync.replicas: "2"
 
     resources:
       requests:
