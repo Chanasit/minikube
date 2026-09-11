@@ -17,6 +17,9 @@ metadata:
 spec:
   interval: 60m
   releaseName: kafka-ui
+  dependsOn:
+    - name: kafka
+      namespace: logging
   chart:
     spec:
       version: "0.7.4"

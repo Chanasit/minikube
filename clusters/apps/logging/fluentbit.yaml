@@ -17,6 +17,9 @@ metadata:
 spec:
   interval: 1h0m0s
   releaseName: fluent-bit
+  dependsOn:
+    - name: kafka
+      namespace: logging
   chart:
     spec:
       version: "0.43.0"

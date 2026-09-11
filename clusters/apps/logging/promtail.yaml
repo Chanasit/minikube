@@ -17,6 +17,11 @@ metadata:
 spec:
   interval: 1h0m0s
   releaseName: promtail
+  dependsOn:
+    - name: kafka
+      namespace: logging
+    - name: loki
+      namespace: logging
   chart:
     spec:
       version: "6.15.5"

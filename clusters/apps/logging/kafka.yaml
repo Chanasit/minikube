@@ -39,6 +39,9 @@ spec:
     kraftVersion: 0
     clusterId: "keep-the-same-value-after-first-install"
 
+    overrideConfiguration:
+      auto.create.topics.enable: "true"
+
     image:
       registry: docker.io
       repository: bitnamilegacy/kafka           # ← changed from bitnamilegacy
@@ -102,6 +105,8 @@ spec:
     provisioning:
       enabled: true
       waitForKafka: true
+      containerSecurityContext:
+        readOnlyRootFilesystem: false
       topics:
         - name: logstash
           partitions: 3
