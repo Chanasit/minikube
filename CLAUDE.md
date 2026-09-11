@@ -36,4 +36,4 @@ kubectl get pods -A                                 # cluster status
 ## Notes
 
 - `readme.md` mentions a Makefile — none exists. Terraform is the real bootstrap path.
-- Flux pins `v2.4.0` (`terraform/main.tf`); minikube k8s `v1.35.0`.
+- Flux pins `v2.9.5` (`terraform/main.tf`); minikube k8s `v1.35.0`.

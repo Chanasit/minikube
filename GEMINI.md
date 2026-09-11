@@ -44,4 +44,4 @@ kubectl get pods -A
 - **Pre-commit checks**: Run `terraform fmt -check` and `trivy config .`.
 - **Destructive operations**: Any destructive command (`terraform destroy`, `minikube delete`, `kubectl delete namespace`, suspending/pruning Flux resources) requires explicit confirmation — never execute autonomously.
 - **Labels**: Label deployments with `managed_by: caveman` and appropriate environment identifiers.
-- **Pinned Versions**: Flux CLI / bootstrap `v2.4.0`; Minikube Kubernetes `v1.35.0`.
+- **Pinned Versions**: Flux CLI / bootstrap `v2.9.5`; Minikube Kubernetes `v1.35.0`.
