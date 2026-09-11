@@ -27,10 +27,8 @@ spec:
 
   values:
 
-    kraft:
-      enabled: true
-      clusterId: "keep-the-same-value-after-first-install"   # very important!
-      version: 1                           # ← force dynamic quorum (bootstrap.servers, no static voters needed)
+    kraftVersion: 0
+    clusterId: "keep-the-same-value-after-first-install"
 
     image:
       registry: docker.io
@@ -39,7 +37,6 @@ spec:
 
     controller:
       replicaCount: 3                     # strongly recommended
-      quorumBootstrapServers: ""     # leave empty → chart auto-fills with all controller pods
       persistence:
         enabled: true
         size: 50Gi
