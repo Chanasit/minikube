@@ -277,7 +277,9 @@ spec:
     extraVolumeMounts: []
 
     # Extra args for the Promtail container.
-    extraArgs: []
+    extraArgs:
+      # expand ${KAFKA_SASL_PASSWORD} in config; literal $ in config must be written $$
+      - -config.expand-env=true
     # -- Example:
     # -- extraArgs:
     # --   - -client.external-labels=hostname=$(HOSTNAME)
@@ -286,7 +288,13 @@ spec:
     # Tracing currently only support configure via environment variables. See:
     # https://grafana.com/docs/loki/latest/clients/promtail/configuration/#tracing_config
     # https://www.jaegertracing.io/docs/1.16/client-features/
-    extraEnv: []
+    extraEnv:
+      # Kafka client password for user "app1"; from Secret kafka-sasl (terraform-generated)
+      - name: KAFKA_SASL_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: kafka-sasl
+            key: app1-password
 
     # -- Extra environment variables from secrets or configmaps
     extraEnvFrom: []
@@ -478,7 +486,7 @@ spec:
               - __meta_kubernetes_namespace
             target_label: namespace
           - action: replace
-            replacement: $1
+            replacement: $$1
             separator: /
             source_labels:
               - namespace
@@ -493,14 +501,14 @@ spec:
               - __meta_kubernetes_pod_container_name
             target_label: container
           - action: replace
-            replacement: /var/log/pods/*$1/*.log
+            replacement: /var/log/pods/*$$1/*.log
             separator: /
             source_labels:
               - __meta_kubernetes_pod_uid
               - __meta_kubernetes_pod_container_name
             target_label: __path__
           - action: replace
-            replacement: /var/log/pods/*$1/*.log
+            replacement: /var/log/pods/*$$1/*.log
             regex: true/(.*)
             separator: /
             source_labels:
@@ -547,7 +555,7 @@ spec:
                 sasl_config:
                   mechanism: PLAIN
                   user: app1
-                  password: long-secret-app1-2026
+                  password: ${KAFKA_SASL_PASSWORD}
                   use_tls: false
                   insecure_skip_verify: false
             relabel_configs:

@@ -16,6 +16,10 @@ terraform {
       source  = "integrations/github"
       version = "~> 6.0"
     }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.6"
+    }
   }
 }
 provider "minikube" {
@@ -67,6 +71,7 @@ resource "flux_bootstrap_git" "this" {
   version  = "v2.9.5" # optional: pin Flux version
   # components_extra = ["image-reflector-controller", "image-automation-controller"] # if needed
 }
+
 
 # Optional: secure PAT via variable (recommended)
 variable "github_token" {
