@@ -337,7 +337,13 @@ spec:
 
     priorityClassName: ""
 
-    env: []
+    env:
+      # Kafka client password for user "logstash"; from Secret kafka-sasl (terraform-generated)
+      - name: KAFKA_SASL_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: kafka-sasl
+            key: logstash-password
     #  - name: FOO
     #    value: "bar"
 
@@ -481,7 +487,7 @@ spec:
             rdkafka.security.protocol                       SASL_PLAINTEXT
             rdkafka.sasl.mechanism                          PLAIN
             rdkafka.sasl.username                           logstash
-            rdkafka.sasl.password                           long-secret-logstash
+            rdkafka.sasl.password                           ${KAFKA_SASL_PASSWORD}
             rdkafka.log.connection.close                    false
             rdkafka.request.required.acks                   1
             rdkafka.queue.buffering.max.kbytes              10240

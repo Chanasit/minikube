@@ -88,9 +88,16 @@ spec:
         KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
         KAFKA_CLUSTERS_0_PROPERTIES_SECURITY_PROTOCOL: SASL_PLAINTEXT
         KAFKA_CLUSTERS_0_PROPERTIES_SASL_MECHANISM: PLAIN
-        KAFKA_CLUSTERS_0_PROPERTIES_SASL_JAAS_CONFIG: 'org.apache.kafka.common.security.plain.PlainLoginModule required username="app1" password="long-secret-app1-2026";'
 
-    env: {}
+    env:
+      # password from Secret kafka-sasl (terraform-generated); kubelet expands $(VAR)
+      - name: KAFKA_SASL_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: kafka-sasl
+            key: app1-password
+      - name: KAFKA_CLUSTERS_0_PROPERTIES_SASL_JAAS_CONFIG
+        value: 'org.apache.kafka.common.security.plain.PlainLoginModule required username="app1" password="$(KAFKA_SASL_PASSWORD)";'
 
     networkPolicy:
       enabled: false
