@@ -31,7 +31,7 @@ kubectl get pods -A                                 # cluster status
 - Validate before commit: `terraform fmt -check` and `trivy config .`.
 - Destructive ops (`terraform destroy`, `minikube delete`, `kubectl delete namespace`, Flux suspend/prune-all) require explicit confirmation — never run unprompted.
 - Manifests are reproducible code. No manual UI/click steps, no live `kubectl patch` as a fix — change the file, commit, let Flux apply.
-- Label deployments: `managed_by: caveman` + environment key.
+- Label deployments: `managed_by: caveman` + `environment: lab`. New app dir: copy the `labels:` block (`includeSelectors: false`) into its `kustomization.yaml`; new HelmRelease: add `spec.commonMetadata.labels` (reaches chart-rendered objects).
 
 ## Notes
 

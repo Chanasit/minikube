@@ -16,6 +16,10 @@ metadata:
   name: weave-gitops
   namespace: flux-system
 spec:
+  commonMetadata:
+    labels:
+      managed_by: caveman
+      environment: lab
   chart:
     spec:
       chart: weave-gitops

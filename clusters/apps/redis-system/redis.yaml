@@ -18,6 +18,10 @@ metadata:
   annotations:
     fluxcd.io/automated: "false"
 spec:
+  commonMetadata:
+    labels:
+      managed_by: caveman
+      environment: lab
   interval: 1h0m0s
   timeout: 10m
   install:

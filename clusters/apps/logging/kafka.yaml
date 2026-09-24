@@ -15,6 +15,10 @@ metadata:
   name: kafka
   namespace: logging
 spec:
+  commonMetadata:
+    labels:
+      managed_by: caveman
+      environment: lab
   interval: 1h
   timeout: 10m
   install:
