@@ -55,6 +55,8 @@ resource "kubernetes_secret" "kafka_sasl" {
       "client-passwords"      = join(",", [for u in local.kafka_client_users : random_password.kafka_client[u].result])
       "inter-broker-password" = random_password.kafka_inter_broker.result
       "controller-password"   = random_password.kafka_controller.result
+      # provisioning Job authenticates as the first client user (chart: templates/secrets.yaml)
+      "system-user-password" = random_password.kafka_client[local.kafka_client_users[0]].result
     },
     { for u in local.kafka_client_users : "${u}-password" => random_password.kafka_client[u].result },
   )
