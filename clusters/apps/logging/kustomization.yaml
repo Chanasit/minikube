@@ -8,6 +8,4 @@ resources:
   - fluentbit.yaml
   - loki.yaml
   - promtail.yaml
-  - grafana.yaml
   - random-logger.yaml
-  - random-logger-dashboard.yaml

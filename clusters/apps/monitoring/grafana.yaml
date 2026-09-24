@@ -27,8 +27,12 @@ spec:
         namespace: monitoring
   install:
     crds: Create
+    remediation:
+      retries: 3
   upgrade:
     crds: CreateReplace
+    remediation:
+      retries: 3
   values:
     rbac:
       create: true
@@ -498,7 +502,8 @@ spec:
         datasources:
         - name: Loki
           type: loki
-          url: http://loki-gateway:80
+          # Loki runs in the logging namespace; short name would not resolve from monitoring
+          url: http://loki-gateway.logging.svc.cluster.local:80
           access: proxy
           basicAuth: false
           jsonData:
@@ -668,7 +673,7 @@ spec:
     ## Requires at least Grafana 5 to work and can't be used together with parameters dashboardProviders, datasources and dashboards
     sidecar:
       image:
-        repository: quay.io/kiwigrid/k8s-sidecar
+        repository: kiwigrid/k8s-sidecar
         tag: 1.15.6
         sha: ""
       imagePullPolicy: IfNotPresent
@@ -684,7 +689,7 @@ spec:
       # skipTlsVerify: true
       enableUniqueFilenames: false
       dashboards:
-        enabled: false
+        enabled: true
         SCProvider: true
         # label that the configmaps with dashboards are marked with
         label: grafana_dashboard
