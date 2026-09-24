@@ -33,7 +33,7 @@ resource "minikube_cluster" "orbstack" {
   cpus         = "6"
   memory       = "16g"
   nodes        = 1
-  cni          = "bridge" # Allows pods to communicate with each other via DNS
+  cni          = "bridge" # sole CNI; do not add Calico/tigera-operator via Flux (two CNI configs conflict)
   addons = [
     "default-storageclass",
     "storage-provisioner"

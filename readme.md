@@ -10,7 +10,7 @@ Local Kubernetes playground with GitOps (Flux), service mesh (Istio), observabil
 
 This repository contains my personal configuration and automation scripts to quickly spin up a **local Kubernetes cluster** using **Minikube** with commonly used add-ons and operators:
 
-- Calico CNI
+- Bridge CNI (minikube built-in)
 - Istio service mesh
 - Flux GitOps
 - Elastic stack (Elasticsearch + Kibana)

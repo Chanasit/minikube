@@ -6,7 +6,7 @@ Personal minikube GitOps lab. Terraform bootstraps a local cluster + Flux; Flux 
 
 - `terraform/main.tf` — provisions the minikube cluster (`orbstack`, docker driver, 6 cpu / 16g) and runs `flux_bootstrap_git` against `clusters/apps`, branch `master`, interval `1m`. Providers: minikube, kubernetes, flux, github.
 - `clusters/apps/flux-system/` — Flux-generated (`gotk-components.yaml`, `gotk-sync.yaml`). Marked `DO NOT EDIT`; regenerated on bootstrap.
-- `clusters/apps/<app>/` — one dir per app (calico-system, istio-system, elastic-system, redis-system, monitoring, logging, weave). Each holds `namespace.yaml`, its manifests, and a `kustomization.yaml` that sets `namespace:` + lists `resources:`.
+- `clusters/apps/<app>/` — one dir per app (istio-system, elastic-system, redis-system, monitoring, logging, weave). Each holds `namespace.yaml`, its manifests, and a `kustomization.yaml` that sets `namespace:` + lists `resources:`.
 - No top-level `clusters/apps/kustomization.yaml` — Flux reconciles the path recursively.
 
 ## Deploy model (GitOps — read this before editing manifests)

@@ -7,7 +7,7 @@ Personal minikube GitOps lab. Terraform provisions a local cluster and bootstrap
 - **`terraform/main.tf`**: Provisions the minikube cluster (`orbstack`, docker driver, 6 cpus / 16g RAM) and runs `flux_bootstrap_git` against `clusters/apps`, tracking branch `master` at a `1m` sync interval.
   - Providers: `minikube`, `kubernetes`, `flux`, `github`.
 - **`clusters/apps/flux-system/`**: Flux internal components (`gotk-components.yaml`, `gotk-sync.yaml`). Auto-generated on bootstrap — **DO NOT MANUALLY EDIT**.
-- **`clusters/apps/<app>/`**: One folder per application stack (`calico-system`, `istio-system`, `elastic-system`, `redis-system`, `monitoring`, `logging`, `weave`).
+- **`clusters/apps/<app>/`**: One folder per application stack (`istio-system`, `elastic-system`, `redis-system`, `monitoring`, `logging`, `weave`).
   - Each contains: `namespace.yaml`, resource manifests, and a `kustomization.yaml` defining `namespace:` and `resources:`.
   - Flux reconciles `clusters/apps` recursively without needing a root `kustomization.yaml`.
 
