@@ -27,6 +27,12 @@ resource "random_password" "kafka_controller" {
   special = false
 }
 
+# alphanumeric only: rendered unquoted into the Loki s3 storage config
+resource "random_password" "loki_minio" {
+  length  = 32
+  special = false
+}
+
 resource "random_password" "weave_admin" {
   length  = 24
   special = false
@@ -60,6 +66,21 @@ resource "kubernetes_secret" "kafka_sasl" {
     },
     { for u in local.kafka_client_users : "${u}-password" => random_password.kafka_client[u].result },
   )
+  depends_on = [terraform_data.wait_app_namespaces]
+}
+
+# Loki MinIO root credentials; injected into the loki HelmRelease via spec.valuesFrom
+# (clusters/apps/logging/loki.yaml). Name must not be loki-minio: the minio subchart owns that Secret.
+resource "kubernetes_secret" "loki_minio" {
+  metadata {
+    name      = "loki-minio-root"
+    namespace = "logging"
+    labels    = local.secret_labels
+  }
+  data = {
+    rootUser     = "loki"
+    rootPassword = random_password.loki_minio.result
+  }
   depends_on = [terraform_data.wait_app_namespaces]
 }
 

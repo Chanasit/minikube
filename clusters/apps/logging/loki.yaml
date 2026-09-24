@@ -33,6 +33,15 @@ spec:
     crds: CreateReplace
     remediation:
       retries: 3
+  valuesFrom:
+    - kind: Secret
+      name: loki-minio-root
+      valuesKey: rootUser
+      targetPath: minio.rootUser
+    - kind: Secret
+      name: loki-minio-root
+      valuesKey: rootPassword
+      targetPath: minio.rootPassword
   values:
     global:
       image:
@@ -118,7 +127,8 @@ spec:
       # -- Defines what kind of object stores the configuration, a ConfigMap or a Secret.
       # In order to move sensitive information (such as credentials) from the ConfigMap/Secret to a more secure location (e.g. vault), it is possible to use [environment variables in the configuration](https://grafana.com/docs/loki/latest/configuration/#use-environment-variables-in-the-configuration).
       # Such environment variables can be then stored in a separate Secret and injected via the global.extraEnvFrom value. For details about environment injection from a Secret please see [Secrets](https://kubernetes.io/docs/concepts/configuration/secret/#use-case-as-container-environment-variables).
-      configStorageType: ConfigMap
+      # Secret: minio credentials are rendered into the config (loki.commonStorageConfig)
+      configStorageType: Secret
       # -- Name of the Secret or ConfigMap that contains the configuration (used for naming even if config is internal).
       externalConfigSecretName: '{{ include "loki.name" . }}'
       # -- Config file contents for Loki
@@ -1582,14 +1592,14 @@ spec:
     # Configuration for `minio` child chart
     # -------------------------------------
     minio:
-      enabled: false
+      enabled: true
       replicas: 1
       # Minio requires 2 to 16 drives for erasure code (drivesPerNode * replicas)
       # https://docs.min.io/docs/minio-erasure-code-quickstart-guide
       # Since we only have 1 replica, that means 2 drives must be used.
       drivesPerNode: 2
-      rootUser: enterprise-logs
-      rootPassword: supersecret
+      # rootUser / rootPassword come from Secret logging/loki-minio-root (terraform/secrets.tf) via spec.valuesFrom.
+      # Do not set them here: spec.values overrides valuesFrom.
       buckets:
         - name: chunks
           policy: none

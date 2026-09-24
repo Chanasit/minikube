@@ -10,3 +10,4 @@ resources:
   - promtail.yaml
   - grafana.yaml
   - random-logger.yaml
+  - random-logger-dashboard.yaml
