@@ -37,6 +37,9 @@ spec:
   values:
 
     kraftVersion: 0
+    # KRaft cluster ID. Looks like a template placeholder but it IS the live ID: the controllers
+    # formatted their PVCs with it (meta.properties). NEVER change it — nodes refuse to start on
+    # mismatch. A new value only works together with wiping the kafka-controller PVCs + Secret kafka-kraft.
     clusterId: "keep-the-same-value-after-first-install"
 
     overrideConfiguration:
