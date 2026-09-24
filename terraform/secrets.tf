@@ -33,19 +33,24 @@ resource "random_password" "loki_minio" {
   special = false
 }
 
+resource "random_password" "redis" {
+  length  = 32
+  special = false
+}
+
 resource "random_password" "weave_admin" {
   length  = 24
   special = false
 }
 
-# logging/ and weave/ namespaces are owned by Flux (namespace.yaml). Wait for Flux to create them
+# logging/, redis-system/ and weave/ namespaces are owned by Flux (namespace.yaml). Wait for Flux to create them
 # instead of creating them here, so there is a single owner.
 resource "terraform_data" "wait_app_namespaces" {
   triggers_replace = [flux_bootstrap_git.this.id]
 
   provisioner "local-exec" {
     command = <<-EOT
-      kubectl --context ${minikube_cluster.orbstack.cluster_name} wait --for=create namespace/logging namespace/weave --timeout=10m
+      kubectl --context ${minikube_cluster.orbstack.cluster_name} wait --for=create namespace/logging namespace/redis-system namespace/weave --timeout=10m
     EOT
   }
 }
@@ -80,6 +85,19 @@ resource "kubernetes_secret" "loki_minio" {
   data = {
     rootUser     = "loki"
     rootPassword = random_password.loki_minio.result
+  }
+  depends_on = [terraform_data.wait_app_namespaces]
+}
+
+# Redis auth; referenced by auth.existingSecret in clusters/apps/redis-system/redis.yaml
+resource "kubernetes_secret" "redis_auth" {
+  metadata {
+    name      = "redis-auth"
+    namespace = "redis-system"
+    labels    = local.secret_labels
+  }
+  data = {
+    "redis-password" = random_password.redis.result
   }
   depends_on = [terraform_data.wait_app_namespaces]
 }
