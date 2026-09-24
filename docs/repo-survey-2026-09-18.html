@@ -1,0 +1,621 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Minikube GitOps Lab — Repository Survey</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:ital,wght@0,400;1,400&display=swap">
+<style>
+  :root {
+    --ground: #F5F7F6;
+    --surface: #FFFFFF;
+    --surface-2: #EDF1EF;
+    --ink: #12181B;
+    --ink-2: #4C5A5E;
+    --ink-3: #6F7E81;
+    --rule: #D6DFDC;
+    --accent: #0E6F70;
+    --accent-soft: #E0EFEE;
+    --crit: #A62A22;
+    --high: #9C5A08;
+    --med: #6E6410;
+    --low: #4A5A63;
+    --ok: #2F6E4A;
+    --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --serif: "IBM Plex Serif", Georgia, "Times New Roman", serif;
+    --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0E1416;
+      --surface: #151D20;
+      --surface-2: #1B2528;
+      --ink: #E7EDEC;
+      --ink-2: #A3B2B1;
+      --ink-3: #7F8F90;
+      --rule: #263234;
+      --accent: #4FC3BF;
+      --accent-soft: #12302F;
+      --crit: #EC8377;
+      --high: #DFA255;
+      --med: #C9BC68;
+      --low: #93A3A8;
+      --ok: #6FBF8E;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #0E1416;
+    --surface: #151D20;
+    --surface-2: #1B2528;
+    --ink: #E7EDEC;
+    --ink-2: #A3B2B1;
+    --ink-3: #7F8F90;
+    --rule: #263234;
+    --accent: #4FC3BF;
+    --accent-soft: #12302F;
+    --crit: #EC8377;
+    --high: #DFA255;
+    --med: #C9BC68;
+    --low: #93A3A8;
+    --ok: #6FBF8E;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  img { max-width: 100%; }
+  [hidden] { display: none !important; }
+  .wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding-inline: 20px;
+    padding-block: 40px 72px;
+  }
+  .cols {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+    align-items: start;
+  }
+  @media (min-width: 940px) {
+    .cols { grid-template-columns: 180px minmax(0, 1fr); gap: 56px; }
+    .rail { position: sticky; top: 32px; }
+  }
+
+  /* ---------- masthead ---------- */
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 14px;
+  }
+  h1 {
+    font-size: clamp(30px, 5.2vw, 46px);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.08;
+    text-wrap: balance;
+    margin: 0 0 18px;
+  }
+  .lede {
+    font-family: var(--serif);
+    font-size: clamp(17px, 2.3vw, 19px);
+    line-height: 1.62;
+    color: var(--ink-2);
+    max-width: 62ch;
+    margin: 0;
+  }
+  .masthead {
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 32px;
+    margin-bottom: 40px;
+  }
+  .facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 10px;
+    margin-top: 24px;
+  }
+  .fact {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-2);
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    padding: 4px 9px;
+  }
+  .fact b { color: var(--ink); font-weight: 600; }
+  .status-line {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-top: 20px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--ink-2);
+    border-left: 3px solid var(--high);
+    padding: 6px 0 6px 12px;
+  }
+  .status-line b { color: var(--ink); font-weight: 600; }
+
+  /* ---------- rail ---------- */
+  .rail nav { display: flex; flex-direction: column; gap: 2px; }
+  .rail a {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-3);
+    text-decoration: none;
+    padding: 4px 0 4px 10px;
+    border-left: 2px solid var(--rule);
+  }
+  .rail a:hover, .rail a:focus-visible { color: var(--accent); border-left-color: var(--accent); }
+  .rail-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin: 0 0 10px;
+  }
+
+  /* ---------- sections ---------- */
+  section { margin-bottom: 52px; scroll-margin-top: 24px; }
+  section:last-child { margin-bottom: 0; }
+  h2 {
+    font-size: 13px;
+    font-family: var(--mono);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 6px;
+  }
+  h3 {
+    font-size: clamp(21px, 3vw, 25px);
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+    margin: 0 0 16px;
+  }
+  p { max-width: 68ch; margin: 0 0 14px; color: var(--ink-2); }
+  p strong { color: var(--ink); font-weight: 600; }
+  code {
+    font-family: var(--mono);
+    font-size: 0.875em;
+    background: var(--surface-2);
+    border-radius: 3px;
+    padding: 1px 5px;
+    color: var(--ink);
+  }
+
+  /* ---------- flow diagram ---------- */
+  .diagram {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 20px 16px 12px;
+    overflow-x: auto;
+  }
+  .diagram svg { display: block; min-width: 620px; max-width: 100%; height: auto; margin: 0 auto; }
+  .d-label { font-family: var(--mono); font-size: 11px; fill: var(--ink-2); }
+  .d-title { font-family: var(--mono); font-size: 12.5px; font-weight: 600; fill: var(--ink); }
+  .d-note { font-family: var(--mono); font-size: 10px; fill: var(--ink-3); }
+  figcaption {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--ink-3);
+    margin-top: 10px;
+    max-width: 68ch;
+  }
+  figure { margin: 0 0 18px; }
+
+  /* ---------- table ---------- */
+  .table-scroll { overflow-x: auto; border: 1px solid var(--rule); border-radius: 4px; background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; min-width: 660px; font-size: 13.5px; }
+  th {
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--ink-3);
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--rule);
+    white-space: nowrap;
+  }
+  td {
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--rule);
+    color: var(--ink-2);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: 0; }
+  td.ns { font-family: var(--mono); color: var(--ink); font-weight: 500; white-space: nowrap; }
+  td.ver { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .pill {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+  .pill.live { color: var(--ok); background: color-mix(in srgb, var(--ok) 13%, transparent); }
+  .pill.off { color: var(--low); background: color-mix(in srgb, var(--low) 15%, transparent); }
+  .pill.risk { color: var(--crit); background: color-mix(in srgb, var(--crit) 13%, transparent); }
+
+  /* ---------- findings ---------- */
+  .findings { display: flex; flex-direction: column; gap: 2px; margin: 0; padding: 0; list-style: none; }
+  .finding {
+    display: grid;
+    grid-template-columns: 74px minmax(0, 1fr);
+    gap: 0 16px;
+    background: var(--surface);
+    border-left: 3px solid var(--sev);
+    padding: 14px 16px;
+  }
+  @media (max-width: 620px) {
+    .finding { grid-template-columns: 1fr; gap: 8px; }
+  }
+  .sev {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--sev);
+    padding-top: 2px;
+  }
+  .finding h4 { font-size: 15px; font-weight: 600; margin: 0 0 5px; color: var(--ink); letter-spacing: -0.01em; }
+  .finding p { font-size: 13.5px; margin: 0 0 6px; max-width: 64ch; }
+  .finding p:last-child { margin-bottom: 0; }
+  .where { font-family: var(--mono); font-size: 11.5px; color: var(--ink-3); }
+  .fix { color: var(--ink); }
+  .fix b { font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); font-weight: 600; margin-right: 6px; }
+  .crit { --sev: var(--crit); }
+  .high { --sev: var(--high); }
+  .med  { --sev: var(--med); }
+  .low  { --sev: var(--low); }
+
+  /* ---------- clean list ---------- */
+  .clean { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+  .clean li { display: flex; gap: 10px; font-size: 14px; color: var(--ink-2); max-width: 66ch; }
+  .clean li::before { content: "✓"; color: var(--ok); font-weight: 600; flex: none; }
+
+  /* ---------- commands ---------- */
+  pre {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.75;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 14px 16px;
+    margin: 0;
+    overflow-x: auto;
+    color: var(--ink);
+  }
+  pre .c { color: var(--ink-3); }
+  a { color: var(--accent); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="masthead">
+    <p class="eyebrow">Repository survey · 2026-09-18</p>
+    <h1>Minikube GitOps Lab</h1>
+    <p class="lede">A single-node local Kubernetes cluster, bootstrapped by Terraform and thereafter owned entirely by Flux. Seven app namespaces reconcile from <code>master</code> every minute. The manifests are complete; the sizing, secrets, and log pipeline are not.</p>
+    <div class="facts">
+      <span class="fact"><b>minikube</b> orbstack · docker · 6 cpu / 16g</span>
+      <span class="fact"><b>k8s</b> v1.35.0</span>
+      <span class="fact"><b>flux</b> v2.9.5</span>
+      <span class="fact"><b>path</b> clusters/apps</span>
+      <span class="fact"><b>prune</b> true</span>
+      <span class="fact"><b>commits</b> 67</span>
+    </div>
+    <p class="status-line"><b>Cluster offline.</b> <span>kubectl → 127.0.0.1:32781 connection refused. Findings below are read from manifests, not live state.</span></p>
+  </header>
+
+  <div class="cols">
+    <aside class="rail">
+      <p class="rail-title">Contents</p>
+      <nav>
+        <a href="#model">Deploy model</a>
+        <a href="#inventory">Inventory</a>
+        <a href="#findings">Findings</a>
+        <a href="#sound">What holds</a>
+        <a href="#commands">Commands</a>
+      </nav>
+    </aside>
+
+    <main>
+      <section id="model">
+        <h2>Deploy model</h2>
+        <h3>Terraform bootstraps once; Flux owns the rest</h3>
+        <p><code>terraform/main.tf</code> does two things and then steps back: it creates the <code>orbstack</code> minikube cluster (docker driver, <code>cni = bridge</code>, <code>default-storageclass</code> + <code>storage-provisioner</code> addons), then runs <code>flux_bootstrap_git</code> against this repo. From that point cluster state comes from git. <strong>No <code>kubectl apply</code>, no live patching</strong> — the Kustomization sets <code>prune: true</code>, so anything hand-created is deleted on the next pass.</p>
+        <figure>
+          <div class="diagram">
+            <svg viewBox="0 0 660 288" role="img" aria-label="Flux reconcile flow from the master branch into seven namespaces">
+              <!-- git source -->
+              <rect x="8" y="26" width="138" height="58" rx="3" fill="var(--surface-2)" stroke="var(--rule)"></rect>
+              <text class="d-title" x="22" y="48">GitRepository</text>
+              <text class="d-label" x="22" y="64">Chanasit/minikube</text>
+              <text class="d-note" x="22" y="77">branch master · every 1m</text>
+
+              <!-- arrow 1 -->
+              <line x1="146" y1="55" x2="196" y2="55" stroke="var(--accent)" stroke-width="1.5"></line>
+              <polygon points="196,55 188,51 188,59" fill="var(--accent)"></polygon>
+
+              <!-- kustomization -->
+              <rect x="198" y="18" width="150" height="74" rx="3" fill="var(--surface-2)" stroke="var(--accent)"></rect>
+              <text class="d-title" x="212" y="40">Kustomization</text>
+              <text class="d-label" x="212" y="56">./clusters/apps</text>
+              <text class="d-note" x="212" y="70">every 10m · recursive</text>
+              <text class="d-note" x="212" y="83">prune: true</text>
+
+              <!-- fan out spine -->
+              <line x1="348" y1="55" x2="386" y2="55" stroke="var(--accent)" stroke-width="1.5"></line>
+              <line x1="386" y1="22" x2="386" y2="266" stroke="var(--accent)" stroke-width="1.5"></line>
+
+              <!-- namespace rows -->
+              <g>
+                <line x1="386" y1="22" x2="424" y2="22" stroke="var(--accent)" stroke-width="1.5"></line>
+                <polygon points="424,22 416,18 416,26" fill="var(--accent)"></polygon>
+                <text class="d-title" x="432" y="26">calico-system</text>
+                <text class="d-label" x="556" y="26">tigera-operator</text>
+              </g>
+              <g>
+                <line x1="386" y1="63" x2="424" y2="63" stroke="var(--accent)" stroke-width="1.5"></line>
+                <polygon points="424,63 416,59 416,67" fill="var(--accent)"></polygon>
+                <text class="d-title" x="432" y="67">istio-system</text>
+                <text class="d-label" x="556" y="67">base + istiod</text>
+              </g>
+              <g>
+                <line x1="386" y1="104" x2="424" y2="104" stroke="var(--accent)" stroke-width="1.5"></line>
+                <polygon points="424,104 416,100 416,108" fill="var(--accent)"></polygon>
+                <text class="d-title" x="432" y="108">logging</text>
+                <text class="d-label" x="556" y="108">7 releases</text>
+              </g>
+              <g>
+                <line x1="386" y1="145" x2="424" y2="145" stroke="var(--accent)" stroke-width="1.5"></line>
+                <polygon points="424,145 416,141 416,149" fill="var(--accent)"></polygon>
+                <text class="d-title" x="432" y="149">monitoring</text>
+                <text class="d-label" x="556" y="149">prom + grafana</text>
+              </g>
+              <g>
+                <line x1="386" y1="186" x2="424" y2="186" stroke="var(--accent)" stroke-width="1.5"></line>
+                <polygon points="424,186 416,182 416,190" fill="var(--accent)"></polygon>
+                <text class="d-title" x="432" y="190">elastic-system</text>
+                <text class="d-label" x="556" y="190">es + kibana</text>
+              </g>
+              <g>
+                <line x1="386" y1="227" x2="424" y2="227" stroke="var(--accent)" stroke-width="1.5"></line>
+                <polygon points="424,227 416,223 416,231" fill="var(--accent)"></polygon>
+                <text class="d-title" x="432" y="231">weave</text>
+                <text class="d-label" x="556" y="231">gitops UI</text>
+              </g>
+              <g>
+                <line x1="386" y1="266" x2="424" y2="266" stroke="var(--low)" stroke-width="1.5" stroke-dasharray="3 3"></line>
+                <polygon points="424,266 416,262 416,270" fill="var(--low)"></polygon>
+                <text class="d-title" x="432" y="270" fill="var(--ink-3)">redis-system</text>
+                <text class="d-label" x="556" y="270" fill="var(--ink-3)">namespace only</text>
+              </g>
+            </svg>
+          </div>
+          <figcaption>Each app directory carries its own namespace.yaml, manifests, and a kustomization.yaml setting the namespace. There is no top-level kustomization — Flux walks the path recursively.</figcaption>
+        </figure>
+        <p>Every workload above <code>redis-system</code> is a Flux <code>HelmRepository</code> + <code>HelmRelease</code> pair. Only <code>random-logger</code> (3 replicas, <code>chentex/random-logger</code>) is a plain Deployment.</p>
+      </section>
+
+      <section id="inventory">
+        <h2>Inventory</h2>
+        <h3>What the repo declares</h3>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr><th>Namespace</th><th>Release</th><th>Chart</th><th>Source</th><th>State</th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="ns">calico-system</td><td>calico</td><td class="ver">tigera-operator 3.27.0</td><td>projectcalico.docs.tigera.io</td><td><span class="pill risk">conflicts</span></td></tr>
+              <tr><td class="ns">istio-system</td><td>istio-base, istiod</td><td class="ver">1.19.0</td><td>istio-release.storage.googleapis.com</td><td><span class="pill live">declared</span></td></tr>
+              <tr><td class="ns">logging</td><td>kafka</td><td class="ver">kafka 32.4.3 (OCI)</td><td>registry-1.docker.io/bitnamicharts</td><td><span class="pill risk">oversized</span></td></tr>
+              <tr><td class="ns">logging</td><td>kafka-ui</td><td class="ver">kafka-ui 0.7.4</td><td>provectus.github.io</td><td><span class="pill live">declared</span></td></tr>
+              <tr><td class="ns">logging</td><td>fluent-bit</td><td class="ver">fluent-bit 0.43.0</td><td>fluent.github.io</td><td><span class="pill risk">auth gap</span></td></tr>
+              <tr><td class="ns">logging</td><td>loki</td><td class="ver">loki 5.43.3 (singleBinary)</td><td>grafana.github.io</td><td><span class="pill live">declared</span></td></tr>
+              <tr><td class="ns">logging</td><td>promtail</td><td class="ver">promtail 6.15.5</td><td>grafana.github.io</td><td><span class="pill live">declared</span></td></tr>
+              <tr><td class="ns">logging</td><td>grafana</td><td class="ver">grafana 7.3.2</td><td>grafana.github.io</td><td><span class="pill live">declared</span></td></tr>
+              <tr><td class="ns">monitoring</td><td>prometheus</td><td class="ver">prometheus 25.15.0</td><td>prometheus-community.github.io</td><td><span class="pill live">declared</span></td></tr>
+              <tr><td class="ns">monitoring</td><td>grafana</td><td class="ver">grafana 7.3.2</td><td>grafana.github.io</td><td><span class="pill risk">duplicate</span></td></tr>
+              <tr><td class="ns">elastic-system</td><td>elasticsearch, kibana</td><td class="ver">7.17.3</td><td>helm.elastic.co</td><td><span class="pill risk">no consumer</span></td></tr>
+              <tr><td class="ns">weave</td><td>weave-gitops</td><td class="ver">weave-gitops 4.0.36</td><td>helm.gitops.weave.works</td><td><span class="pill live">declared</span></td></tr>
+              <tr><td class="ns">redis-system</td><td>redis</td><td class="ver">redis 18.17.0</td><td>charts.bitnami.com</td><td><span class="pill off">commented out</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin-top:14px">Note the namespace crossings: <code>weave/weave.yaml</code> deploys into <code>flux-system</code>, not <code>weave</code> — the directory's own <code>namespace.yaml</code> creates an empty <code>weave</code> namespace that nothing lands in.</p>
+      </section>
+
+      <section id="findings">
+        <h2>Findings</h2>
+        <h3>Ranked by what bites first</h3>
+        <ul class="findings">
+
+          <li class="finding crit">
+            <div class="sev">CRITICAL</div>
+            <div>
+              <h4>Kafka SASL credentials committed in plaintext</h4>
+              <p class="where">clusters/apps/logging/kafka.yaml:84–104</p>
+              <p>Five sets of credentials sit in git as literal strings: the interbroker user, the controller user, and three client users (<code>app1</code>, <code>logstash</code>, <code>metrics</code>). The repo is public on GitHub. This also breaks the repo's own stated secrets policy.</p>
+              <p class="fix"><b>Fix</b> Move all six values into a Kubernetes Secret and reference it via <code>valuesFrom</code> on the HelmRelease, or SOPS-encrypt them. Rotate every value — git history keeps the old ones.</p>
+            </div>
+          </li>
+
+          <li class="finding crit">
+            <div class="sev">CRITICAL</div>
+            <div>
+              <h4>Weave GitOps admin password hash in git</h4>
+              <p class="where">clusters/apps/weave/weave.yaml:29 — <code>adminUser.passwordHash</code></p>
+              <p>A bcrypt hash for the <code>admin</code> account of the GitOps UI, committed and public. Bcrypt slows an attacker down; it does not stop one against a lab-grade password.</p>
+              <p class="fix"><b>Fix</b> Set <code>adminUser.create: false</code>, create the <code>cluster-user-auth</code> Secret out of band, rotate the password.</p>
+            </div>
+          </li>
+
+          <li class="finding high">
+            <div class="sev">HIGH</div>
+            <div>
+              <h4>Kafka alone requests more than the node has</h4>
+              <p class="where">clusters/apps/logging/kafka.yaml — controller.replicaCount 3, resources.requests 1500m / 5Gi</p>
+              <p>Three controllers request <strong>4.5 CPU and 15Gi</strong> against a node sized 6 CPU / 16g — before Istio, Elasticsearch, Loki, and Prometheus ask for anything. Storage is worse: <code>3 × 50Gi</code> controller PVCs plus a 100Gi <code>persistence.size</code>, on minikube's <code>standard</code> hostPath class. Heap is set to <code>-Xmx4g</code> inside a 5Gi request. Pods will sit Pending.</p>
+              <p class="fix"><b>Fix</b> For a laptop lab: <code>replicaCount: 1</code>, requests ~500m / 1Gi, <code>heapOpts -Xmx768m</code>, PVC 8Gi. Drop <code>replicationFactor</code> and <code>min.insync.replicas</code> on the provisioned topic to match.</p>
+            </div>
+          </li>
+
+          <li class="finding high">
+            <div class="sev">HIGH</div>
+            <div>
+              <h4>Fluent Bit ships to Kafka with no SASL credentials</h4>
+              <p class="where">clusters/apps/logging/fluentbit.yaml:465–469 vs kafka.yaml listeners</p>
+              <p>The output block is <code>Brokers kafka:9092 / Topics logstash</code> and nothing else. Kafka's client listener is <code>SASL_PLAINTEXT</code>. Every produce attempt fails authentication, so the entire log path into Kafka is dead even once the pods schedule.</p>
+              <p class="fix"><b>Fix</b> Add <code>rdkafka.security.protocol</code>, <code>sasl.mechanism</code>, <code>sasl.username</code>, <code>sasl.password</code> to the OUTPUT, sourced from the same Secret as the fix above.</p>
+            </div>
+          </li>
+
+          <li class="finding high">
+            <div class="sev">HIGH</div>
+            <div>
+              <h4>Two CNIs are installed at once</h4>
+              <p class="where">terraform/main.tf:33 <code>cni = "bridge"</code> + clusters/apps/calico-system/operator.yaml</p>
+              <p>minikube brings the cluster up on bridge CNI, then Flux installs tigera-operator, which lays Calico with a VXLAN pool on <code>10.123.0.0/16</code> over the top. Two CNI configs in <code>/etc/cni/net.d</code> is a coin flip decided by filename order, and the symptom is intermittent pod-to-pod DNS failure.</p>
+              <p class="fix"><b>Fix</b> Pick one. Either set <code>cni = "calico"</code> in Terraform and drop the operator release, or delete <code>calico-system/</code> and keep bridge.</p>
+            </div>
+          </li>
+
+          <li class="finding med">
+            <div class="sev">MEDIUM</div>
+            <div>
+              <h4>Monitoring Grafana points at a service in another namespace</h4>
+              <p class="where">clusters/apps/monitoring/grafana.yaml:496 — <code>url: http://loki-gateway:80</code></p>
+              <p>Short-name DNS resolves within the pod's own namespace. Loki runs in <code>logging</code>, so the datasource in <code>monitoring</code> never resolves. Separately, this Grafana ships <em>only</em> a Loki datasource — the Prometheus release next to it in the same namespace is never wired in.</p>
+              <p class="fix"><b>Fix</b> Use <code>http://loki-gateway.logging.svc.cluster.local</code> and add a Prometheus datasource at <code>http://prometheus-server</code>.</p>
+            </div>
+          </li>
+
+          <li class="finding med">
+            <div class="sev">MEDIUM</div>
+            <div>
+              <h4>The Elasticsearch branch of the pipeline has no consumer</h4>
+              <p class="where">clusters/apps/elastic-system/</p>
+              <p>Fluent Bit produces to the <code>logstash</code> topic; Kibana's postStart hook creates a <code>logstash-*</code> index pattern. Nothing reads the topic and writes to Elasticsearch — no Logstash, no Kafka Connect, no second Fluent Bit. The index pattern will always be empty. Meanwhile the parallel Promtail → Loki → Grafana path is complete and working.</p>
+              <p class="fix"><b>Fix</b> Either add the missing consumer, or retire <code>elastic-system/</code> and let Loki be the log store. Note ES also runs with <code>xpack.security.enabled: false</code>.</p>
+            </div>
+          </li>
+
+          <li class="finding med">
+            <div class="sev">MEDIUM</div>
+            <div>
+              <h4>Kafka cluster ID is still the placeholder</h4>
+              <p class="where">clusters/apps/logging/kafka.yaml:39 — <code>clusterId: "keep-the-same-value-after-first-install"</code></p>
+              <p>KRaft writes this into each controller's metadata log on format. It works, but it is a template string, not an ID — and the comment next to it is an instruction nobody executed.</p>
+              <p class="fix"><b>Fix</b> Generate a real base64 UUID once and pin it.</p>
+            </div>
+          </li>
+
+          <li class="finding low">
+            <div class="sev">LOW</div>
+            <div>
+              <h4>Two identical Grafana releases</h4>
+              <p>Chart 7.3.2 deployed twice — in <code>logging</code> and in <code>monitoring</code> — both provisioning the same Loki datasource. Two UIs, two sets of dashboards, double the memory, and no clear answer to "which one do I open?"</p>
+              <p class="fix"><b>Fix</b> Keep the one in <code>monitoring</code>, give it both datasources, delete <code>logging/grafana.yaml</code>.</p>
+            </div>
+          </li>
+
+          <li class="finding low">
+            <div class="sev">LOW</div>
+            <div>
+              <h4>redis-system is an empty namespace</h4>
+              <p><code>redis.yaml</code> is commented out of the kustomization's resources list, so the directory reconciles a namespace and nothing else. The manifest still references <code>bitnamilegacy/redis</code>.</p>
+              <p class="fix"><b>Fix</b> Re-enable it or remove the directory; a namespace with nothing in it is drift waiting to confuse.</p>
+            </div>
+          </li>
+
+          <li class="finding low">
+            <div class="sev">LOW</div>
+            <div>
+              <h4>The required managed_by label appears nowhere</h4>
+              <p>CLAUDE.md mandates <code>managed_by: caveman</code> plus an environment key on all deployments. A grep across <code>clusters/</code> and <code>terraform/</code> returns zero matches — no namespace carries a <code>labels:</code> block at all.</p>
+              <p class="fix"><b>Fix</b> Add <code>commonLabels</code> to each kustomization.yaml — one line per app directory, applied to everything beneath it.</p>
+            </div>
+          </li>
+
+          <li class="finding low">
+            <div class="sev">LOW</div>
+            <div>
+              <h4>readme.md documents a bootstrap path that does not exist</h4>
+              <p>It advertises "all bootstrapped via Makefile" and hand-run <code>minikube start</code> commands; there is no Makefile, and Terraform is the real entry point. Version badges say minikube v1.33+ / k8s v1.28+ while Terraform pins v1.35.0.</p>
+              <p class="fix"><b>Fix</b> Replace the Quick Start with <code>cd terraform &amp;&amp; terraform apply</code> and correct the badges.</p>
+            </div>
+          </li>
+
+          <li class="finding low">
+            <div class="sev">LOW</div>
+            <div>
+              <h4>History shows three full Flux teardown cycles</h4>
+              <p>The log carries <code>Uninstall Flux</code> → <code>Add Flux components</code> → <code>Add Flux sync</code> three separate times across 67 commits, alongside repeated <code>feat: update kafka config</code>. The bootstrap is being re-run to recover, rather than reconciled.</p>
+              <p class="fix"><b>Fix</b> Once sizing and the Kafka secret are fixed, most of the churn source goes away.</p>
+            </div>
+          </li>
+
+        </ul>
+      </section>
+
+      <section id="sound">
+        <h2>What holds</h2>
+        <h3>Already right, leave it alone</h3>
+        <ul class="clean">
+          <li><strong>Secret hygiene at the Terraform layer.</strong> <code>git ls-files terraform/</code> returns exactly three files: <code>main.tf</code>, <code>.tool-versions</code>, <code>secret.auto.tfvars.example</code>. State, tfvars, and <code>.env</code> are all present on disk and correctly ignored.</li>
+          <li><strong><code>github_token</code> is a sensitive variable</strong> with no default, passed via <code>TF_VAR_github_token</code>.</li>
+          <li><strong>Every chart version is pinned</strong> — no floating tags, no <code>latest</code> on a Helm chart anywhere in the repo.</li>
+          <li><strong>Dependency ordering is explicit</strong> where it matters: <code>fluent-bit</code> declares <code>dependsOn: kafka</code>, and install/upgrade remediation retries are set on the fragile releases.</li>
+          <li><strong>The directory convention is consistent.</strong> Every app dir is namespace + manifests + kustomization, which is why the recursive reconcile works without a top-level file.</li>
+          <li><strong>Promtail → Loki → Grafana is wired end to end</strong>, including the <code>random-logger</code> Deployment as a traffic generator to prove it.</li>
+        </ul>
+      </section>
+
+      <section id="commands">
+        <h2>Commands</h2>
+        <h3>Working the cluster</h3>
+<pre><span class="c"># bring the lab up (cluster is currently down)</span>
+cd terraform &amp;&amp; terraform init &amp;&amp; terraform apply
+
+<span class="c"># reconcile status / force a sync after push</span>
+flux get kustomizations -A
+flux reconcile kustomization flux-system
+
+<span class="c"># validate before commit</span>
+terraform fmt -check
+trivy config .</pre>
+        <p style="margin-top:16px">Changes go through git. Push to <code>master</code>, wait ~1m, or force the reconcile. A <code>kubectl apply</code> against this cluster is drift and gets pruned.</p>
+      </section>
+    </main>
+  </div>
+</div>
+
+</body>
+</html>
