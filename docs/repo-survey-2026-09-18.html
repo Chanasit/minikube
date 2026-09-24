@@ -290,6 +290,13 @@
   .high { --sev: var(--high); }
   .med  { --sev: var(--med); }
   .low  { --sev: var(--low); }
+  .finding.done { --sev: var(--ok); }
+  .finding.done h4 { color: var(--ink-2); }
+  .recheck { font-family: var(--mono); font-size: 11.5px; color: var(--ink-2); border-top: 1px dashed var(--rule); padding-top: 8px; margin-top: 8px !important; }
+  .recheck .pill { margin-right: 8px; }
+  .pill.warn { color: var(--high); background: color-mix(in srgb, var(--high) 13%, transparent); }
+  .status-line.ok { border-left-color: var(--ok); }
+  .tally { display: flex; flex-wrap: wrap; gap: 8px 10px; margin: 0 0 18px; }
 
   /* ---------- clean list ---------- */
   .clean { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
@@ -319,7 +326,7 @@
 
 <div class="wrap">
   <header class="masthead">
-    <p class="eyebrow">Repository survey · 2026-09-18</p>
+    <p class="eyebrow">Repository survey · 2026-09-18 · rechecked 2026-09-24</p>
     <h1>Minikube GitOps Lab</h1>
     <p class="lede">A single-node local Kubernetes cluster, bootstrapped by Terraform and thereafter owned entirely by Flux. Seven app namespaces reconcile from <code>master</code> every minute. The manifests are complete; the sizing, secrets, and log pipeline are not.</p>
     <div class="facts">
@@ -330,7 +337,8 @@
       <span class="fact"><b>prune</b> true</span>
       <span class="fact"><b>commits</b> 67</span>
     </div>
-    <p class="status-line"><b>Cluster offline.</b> <span>kubectl → 127.0.0.1:32781 connection refused. Findings below are read from manifests, not live state.</span></p>
+    <p class="status-line"><b>2026-09-18: cluster offline.</b> <span>kubectl → 127.0.0.1:32781 connection refused. Original findings were read from manifests, not live state.</span></p>
+    <p class="status-line ok"><b>Recheck 2026-09-24 at <code>a622031</code>.</b> <span>Cluster reachable. Of 14 findings: 10 fixed or corrected, 1 accepted as-is, 1 removed from the tree but still in history, 1 no action, 1 open (Elasticsearch).</span></p>
   </header>
 
   <div class="cols">
@@ -352,7 +360,7 @@
         <p><code>terraform/main.tf</code> does two things and then steps back: it creates the <code>orbstack</code> minikube cluster (docker driver, <code>cni = bridge</code>, <code>default-storageclass</code> + <code>storage-provisioner</code> addons), then runs <code>flux_bootstrap_git</code> against this repo. From that point cluster state comes from git. <strong>No <code>kubectl apply</code>, no live patching</strong> — the Kustomization sets <code>prune: true</code>, so anything hand-created is deleted on the next pass.</p>
         <figure>
           <div class="diagram">
-            <svg viewBox="0 0 660 288" role="img" aria-label="Flux reconcile flow from the master branch into seven namespaces">
+            <svg viewBox="0 0 660 288" role="img" aria-label="Flux reconcile flow from the master branch into six app namespaces; calico-system removed">
               <!-- git source -->
               <rect x="8" y="26" width="138" height="58" rx="3" fill="var(--surface-2)" stroke="var(--rule)"></rect>
               <text class="d-title" x="22" y="48">GitRepository</text>
@@ -376,10 +384,10 @@
 
               <!-- namespace rows -->
               <g>
-                <line x1="386" y1="22" x2="424" y2="22" stroke="var(--accent)" stroke-width="1.5"></line>
-                <polygon points="424,22 416,18 416,26" fill="var(--accent)"></polygon>
-                <text class="d-title" x="432" y="26">calico-system</text>
-                <text class="d-label" x="556" y="26">tigera-operator</text>
+                <line x1="386" y1="22" x2="424" y2="22" stroke="var(--low)" stroke-width="1.5" stroke-dasharray="3 3"></line>
+                <polygon points="424,22 416,18 416,26" fill="var(--low)"></polygon>
+                <text class="d-title" x="432" y="26" fill="var(--ink-3)" text-decoration="line-through">calico-system</text>
+                <text class="d-label" x="556" y="26" fill="var(--ink-3)">removed 51c7ec1</text>
               </g>
               <g>
                 <line x1="386" y1="63" x2="424" y2="63" stroke="var(--accent)" stroke-width="1.5"></line>
@@ -391,7 +399,7 @@
                 <line x1="386" y1="104" x2="424" y2="104" stroke="var(--accent)" stroke-width="1.5"></line>
                 <polygon points="424,104 416,100 416,108" fill="var(--accent)"></polygon>
                 <text class="d-title" x="432" y="108">logging</text>
-                <text class="d-label" x="556" y="108">7 releases</text>
+                <text class="d-label" x="556" y="108">5 releases</text>
               </g>
               <g>
                 <line x1="386" y1="145" x2="424" y2="145" stroke="var(--accent)" stroke-width="1.5"></line>
@@ -412,108 +420,125 @@
                 <text class="d-label" x="556" y="231">gitops UI</text>
               </g>
               <g>
-                <line x1="386" y1="266" x2="424" y2="266" stroke="var(--low)" stroke-width="1.5" stroke-dasharray="3 3"></line>
-                <polygon points="424,266 416,262 416,270" fill="var(--low)"></polygon>
-                <text class="d-title" x="432" y="270" fill="var(--ink-3)">redis-system</text>
-                <text class="d-label" x="556" y="270" fill="var(--ink-3)">namespace only</text>
+                <line x1="386" y1="266" x2="424" y2="266" stroke="var(--accent)" stroke-width="1.5"></line>
+                <polygon points="424,266 416,262 416,270" fill="var(--accent)"></polygon>
+                <text class="d-title" x="432" y="270">redis-system</text>
+                <text class="d-label" x="556" y="270">redis</text>
               </g>
             </svg>
           </div>
-          <figcaption>Each app directory carries its own namespace.yaml, manifests, and a kustomization.yaml setting the namespace. There is no top-level kustomization — Flux walks the path recursively.</figcaption>
+          <figcaption>State as of the 2026-09-24 recheck. Each app directory carries its own namespace.yaml, manifests, and a kustomization.yaml setting the namespace. There is no top-level kustomization — Flux walks the path recursively.</figcaption>
         </figure>
-        <p>Every workload above <code>redis-system</code> is a Flux <code>HelmRepository</code> + <code>HelmRelease</code> pair. Only <code>random-logger</code> (3 replicas, <code>chentex/random-logger</code>) is a plain Deployment.</p>
+        <p>Every workload is a Flux <code>HelmRepository</code> + <code>HelmRelease</code> pair. Only <code>random-logger</code> (3 replicas, <code>chentex/random-logger</code>) is a plain Deployment.</p>
       </section>
 
       <section id="inventory">
         <h2>Inventory</h2>
-        <h3>What the repo declares</h3>
+        <h3>What the repo declares (as of 2026-09-24)</h3>
         <div class="table-scroll">
           <table>
             <thead>
               <tr><th>Namespace</th><th>Release</th><th>Chart</th><th>Source</th><th>State</th></tr>
             </thead>
             <tbody>
-              <tr><td class="ns">calico-system</td><td>calico</td><td class="ver">tigera-operator 3.27.0</td><td>projectcalico.docs.tigera.io</td><td><span class="pill risk">conflicts</span></td></tr>
+              <tr><td class="ns">calico-system</td><td>calico</td><td class="ver">tigera-operator 3.27.0</td><td>projectcalico.docs.tigera.io</td><td><span class="pill off">removed</span></td></tr>
               <tr><td class="ns">istio-system</td><td>istio-base, istiod</td><td class="ver">1.19.0</td><td>istio-release.storage.googleapis.com</td><td><span class="pill live">declared</span></td></tr>
-              <tr><td class="ns">logging</td><td>kafka</td><td class="ver">kafka 32.4.3 (OCI)</td><td>registry-1.docker.io/bitnamicharts</td><td><span class="pill risk">oversized</span></td></tr>
+              <tr><td class="ns">logging</td><td>kafka</td><td class="ver">kafka 32.4.3 (OCI)</td><td>registry-1.docker.io/bitnamicharts</td><td><span class="pill live">right-sized</span></td></tr>
               <tr><td class="ns">logging</td><td>kafka-ui</td><td class="ver">kafka-ui 0.7.4</td><td>provectus.github.io</td><td><span class="pill live">declared</span></td></tr>
-              <tr><td class="ns">logging</td><td>fluent-bit</td><td class="ver">fluent-bit 0.43.0</td><td>fluent.github.io</td><td><span class="pill risk">auth gap</span></td></tr>
+              <tr><td class="ns">logging</td><td>fluent-bit</td><td class="ver">fluent-bit 0.43.0</td><td>fluent.github.io</td><td><span class="pill live">declared</span></td></tr>
               <tr><td class="ns">logging</td><td>loki</td><td class="ver">loki 5.43.3 (singleBinary)</td><td>grafana.github.io</td><td><span class="pill live">declared</span></td></tr>
               <tr><td class="ns">logging</td><td>promtail</td><td class="ver">promtail 6.15.5</td><td>grafana.github.io</td><td><span class="pill live">declared</span></td></tr>
-              <tr><td class="ns">logging</td><td>grafana</td><td class="ver">grafana 7.3.2</td><td>grafana.github.io</td><td><span class="pill live">declared</span></td></tr>
+              <tr><td class="ns">logging</td><td>grafana</td><td class="ver">grafana 7.3.2</td><td>grafana.github.io</td><td><span class="pill off">removed</span></td></tr>
               <tr><td class="ns">monitoring</td><td>prometheus</td><td class="ver">prometheus 25.15.0</td><td>prometheus-community.github.io</td><td><span class="pill live">declared</span></td></tr>
-              <tr><td class="ns">monitoring</td><td>grafana</td><td class="ver">grafana 7.3.2</td><td>grafana.github.io</td><td><span class="pill risk">duplicate</span></td></tr>
+              <tr><td class="ns">monitoring</td><td>grafana</td><td class="ver">grafana 7.3.2</td><td>grafana.github.io</td><td><span class="pill live">sole instance</span></td></tr>
               <tr><td class="ns">elastic-system</td><td>elasticsearch, kibana</td><td class="ver">7.17.3</td><td>helm.elastic.co</td><td><span class="pill risk">no consumer</span></td></tr>
-              <tr><td class="ns">weave</td><td>weave-gitops</td><td class="ver">weave-gitops 4.0.36</td><td>helm.gitops.weave.works</td><td><span class="pill live">declared</span></td></tr>
-              <tr><td class="ns">redis-system</td><td>redis</td><td class="ver">redis 18.17.0</td><td>charts.bitnami.com</td><td><span class="pill off">commented out</span></td></tr>
+              <tr><td class="ns">weave</td><td>weave-gitops</td><td class="ver">weave-gitops 4.0.36 (OCI)</td><td>ghcr.io/weaveworks/charts</td><td><span class="pill live">declared</span></td></tr>
+              <tr><td class="ns">redis-system</td><td>redis</td><td class="ver">redis 18.17.0 (OCI)</td><td>registry-1.docker.io/bitnamicharts</td><td><span class="pill live">re-enabled</span></td></tr>
             </tbody>
           </table>
         </div>
-        <p style="margin-top:14px">Note the namespace crossings: <code>weave/weave.yaml</code> deploys into <code>flux-system</code>, not <code>weave</code> — the directory's own <code>namespace.yaml</code> creates an empty <code>weave</code> namespace that nothing lands in.</p>
+        <p style="margin-top:14px"><s>Note the namespace crossings: <code>weave/weave.yaml</code> deploys into <code>flux-system</code>, not <code>weave</code>.</s> <strong>Corrected on recheck:</strong> <code>weave/kustomization.yaml</code> sets <code>namespace: weave</code>, which overrides the <code>flux-system</code> written in the file. <code>kubectl kustomize</code> renders the HelmRelease and HelmRepository into <code>weave</code>, so there is no crossing.</p>
       </section>
 
       <section id="findings">
         <h2>Findings</h2>
         <h3>Ranked by what bites first</h3>
+        <div class="tally"><span class="pill live">fixed · 9</span><span class="pill off">survey corrected · 1</span><span class="pill warn">accepted · 1</span><span class="pill warn">removed from tree · 1</span><span class="pill off">no action · 1</span><span class="pill risk">open · 1</span></div>
         <ul class="findings">
 
-          <li class="finding crit">
+          <li class="finding crit done">
             <div class="sev">CRITICAL</div>
             <div>
               <h4>Kafka SASL credentials committed in plaintext</h4>
               <p class="where">clusters/apps/logging/kafka.yaml:84–104</p>
               <p>Five sets of credentials sit in git as literal strings: the interbroker user, the controller user, and three client users (<code>app1</code>, <code>logstash</code>, <code>metrics</code>). The repo is public on GitHub. This also breaks the repo's own stated secrets policy.</p>
               <p class="fix"><b>Fix</b> Move all six values into a Kubernetes Secret and reference it via <code>valuesFrom</code> on the HelmRelease, or SOPS-encrypt them. Rotate every value — git history keeps the old ones.</p>
+              <p class="recheck"><span class="pill live">fixed</span><code>0f497ee</code>, <code>af6f7b5</code>: passwords now come from Secret <code>kafka-sasl</code> (<code>existingSecret</code>), generated by Terraform <code>random_password</code> in <code>terraform/secrets.tf</code>. The new values differ from the ones left in history.</p>
             </div>
           </li>
 
-          <li class="finding crit">
+          <li class="finding crit done">
             <div class="sev">CRITICAL</div>
             <div>
               <h4>Weave GitOps admin password hash in git</h4>
               <p class="where">clusters/apps/weave/weave.yaml:29 — <code>adminUser.passwordHash</code></p>
               <p>A bcrypt hash for the <code>admin</code> account of the GitOps UI, committed and public. Bcrypt slows an attacker down; it does not stop one against a lab-grade password.</p>
               <p class="fix"><b>Fix</b> Set <code>adminUser.create: false</code>, create the <code>cluster-user-auth</code> Secret out of band, rotate the password.</p>
+              <p class="recheck"><span class="pill live">fixed</span><code>0f497ee</code>: <code>createSecret: false</code>; Terraform creates <code>cluster-user-auth</code> in <code>weave</code> from a generated password (<code>terraform output -raw weave_admin_password</code>).</p>
             </div>
           </li>
 
           <li class="finding high">
+            <div class="sev">HIGH</div>
+            <div>
+              <h4>Grafana admin password committed in plaintext <small style="font-weight:400;color:var(--ink-3)">· found on recheck</small></h4>
+              <p class="where">clusters/apps/logging/grafana.yaml:363 — <code>adminPassword</code> (since <code>6aef2bc</code>)</p>
+              <p>A literal 14-character admin password for the logging Grafana, in a public repo. The original survey missed it.</p>
+              <p class="recheck"><span class="pill warn">removed from tree</span><code>eef5d23</code> deleted the file along with the duplicate Grafana; the <code>monitoring</code> instance uses a password generated by the chart. The value is still in git history. Report it to IT Security and the AI Champion. Do not rewrite history, because that destroys evidence.</p>
+            </div>
+          </li>
+
+          <li class="finding high done">
             <div class="sev">HIGH</div>
             <div>
               <h4>Kafka alone requests more than the node has</h4>
               <p class="where">clusters/apps/logging/kafka.yaml — controller.replicaCount 3, resources.requests 1500m / 5Gi</p>
               <p>Three controllers request <strong>4.5 CPU and 15Gi</strong> against a node sized 6 CPU / 16g — before Istio, Elasticsearch, Loki, and Prometheus ask for anything. Storage is worse: <code>3 × 50Gi</code> controller PVCs plus a 100Gi <code>persistence.size</code>, on minikube's <code>standard</code> hostPath class. Heap is set to <code>-Xmx4g</code> inside a 5Gi request. Pods will sit Pending.</p>
               <p class="fix"><b>Fix</b> For a laptop lab: <code>replicaCount: 1</code>, requests ~500m / 1Gi, <code>heapOpts -Xmx768m</code>, PVC 8Gi. Drop <code>replicationFactor</code> and <code>min.insync.replicas</code> on the provisioned topic to match.</p>
+              <p class="recheck"><span class="pill live">fixed</span><code>a6e6d49</code>: 3 × 100m / 768Mi, heap <code>-Xmx512m</code>. <code>2050db5</code> dropped the dead top-level <code>persistence.size: 100Gi</code> (chart 32.4.3 has no such key). Controller PVCs stay 50Gi: volumeClaimTemplates are immutable and hostPath does not enforce size. Topic <code>replicationFactor: 3</code> / <code>min.insync.replicas: 2</code> kept; they match 3 controllers.</p>
             </div>
           </li>
 
-          <li class="finding high">
+          <li class="finding high done">
             <div class="sev">HIGH</div>
             <div>
               <h4>Fluent Bit ships to Kafka with no SASL credentials</h4>
               <p class="where">clusters/apps/logging/fluentbit.yaml:465–469 vs kafka.yaml listeners</p>
               <p>The output block is <code>Brokers kafka:9092 / Topics logstash</code> and nothing else. Kafka's client listener is <code>SASL_PLAINTEXT</code>. Every produce attempt fails authentication, so the entire log path into Kafka is dead even once the pods schedule.</p>
               <p class="fix"><b>Fix</b> Add <code>rdkafka.security.protocol</code>, <code>sasl.mechanism</code>, <code>sasl.username</code>, <code>sasl.password</code> to the OUTPUT, sourced from the same Secret as the fix above.</p>
+              <p class="recheck"><span class="pill off">survey corrected</span>The OUTPUT already had <code>rdkafka.security.protocol</code> / <code>sasl.*</code> at <code>36bfe5e</code> (lines 481–484); the survey read the wrong lines. The real problem was that the password there was plaintext. <code>0f497ee</code> fixed that: it now comes from <code>${KAFKA_SASL_PASSWORD}</code>, set by <code>secretKeyRef kafka-sasl/logstash-password</code>.</p>
             </div>
           </li>
 
-          <li class="finding high">
+          <li class="finding high done">
             <div class="sev">HIGH</div>
             <div>
               <h4>Two CNIs are installed at once</h4>
               <p class="where">terraform/main.tf:33 <code>cni = "bridge"</code> + clusters/apps/calico-system/operator.yaml</p>
               <p>minikube brings the cluster up on bridge CNI, then Flux installs tigera-operator, which lays Calico with a VXLAN pool on <code>10.123.0.0/16</code> over the top. Two CNI configs in <code>/etc/cni/net.d</code> is a coin flip decided by filename order, and the symptom is intermittent pod-to-pod DNS failure.</p>
               <p class="fix"><b>Fix</b> Pick one. Either set <code>cni = "calico"</code> in Terraform and drop the operator release, or delete <code>calico-system/</code> and keep bridge.</p>
+              <p class="recheck"><span class="pill live">fixed</span><code>51c7ec1</code>: <code>clusters/apps/calico-system/</code> deleted, bridge kept as the only CNI. No manifest enabled NetworkPolicy. A leftover <code>10-calico.conflist</code> on the node is possible; check with <code>minikube ssh -p orbstack -- ls /etc/cni/net.d</code>.</p>
             </div>
           </li>
 
-          <li class="finding med">
+          <li class="finding med done">
             <div class="sev">MEDIUM</div>
             <div>
               <h4>Monitoring Grafana points at a service in another namespace</h4>
               <p class="where">clusters/apps/monitoring/grafana.yaml:496 — <code>url: http://loki-gateway:80</code></p>
               <p>Short-name DNS resolves within the pod's own namespace. Loki runs in <code>logging</code>, so the datasource in <code>monitoring</code> never resolves. Separately, this Grafana ships <em>only</em> a Loki datasource — the Prometheus release next to it in the same namespace is never wired in.</p>
               <p class="fix"><b>Fix</b> Use <code>http://loki-gateway.logging.svc.cluster.local</code> and add a Prometheus datasource at <code>http://prometheus-server</code>.</p>
+              <p class="recheck"><span class="pill live">fixed</span><code>eef5d23</code>: URL now <code>http://loki-gateway.logging.svc.cluster.local:80</code>. Survey corrected: the Prometheus datasource (<code>http://prometheus-server:80</code>) was already present at <code>36bfe5e</code>.</p>
             </div>
           </li>
 
@@ -524,6 +549,7 @@
               <p class="where">clusters/apps/elastic-system/</p>
               <p>Fluent Bit produces to the <code>logstash</code> topic; Kibana's postStart hook creates a <code>logstash-*</code> index pattern. Nothing reads the topic and writes to Elasticsearch — no Logstash, no Kafka Connect, no second Fluent Bit. The index pattern will always be empty. Meanwhile the parallel Promtail → Loki → Grafana path is complete and working.</p>
               <p class="fix"><b>Fix</b> Either add the missing consumer, or retire <code>elastic-system/</code> and let Loki be the log store. Note ES also runs with <code>xpack.security.enabled: false</code>.</p>
+              <p class="recheck"><span class="pill risk">open</span>Unchanged. Still nothing writes to Elasticsearch, and <code>xpack.security.enabled: false</code> (<code>elastic.yaml:33</code>). Decide: add a consumer, or retire <code>elastic-system/</code>.</p>
             </div>
           </li>
 
@@ -534,42 +560,47 @@
               <p class="where">clusters/apps/logging/kafka.yaml:39 — <code>clusterId: "keep-the-same-value-after-first-install"</code></p>
               <p>KRaft writes this into each controller's metadata log on format. It works, but it is a template string, not an ID — and the comment next to it is an instruction nobody executed.</p>
               <p class="fix"><b>Fix</b> Generate a real base64 UUID once and pin it.</p>
+              <p class="recheck"><span class="pill warn">accepted</span><code>1dd3268</code>: the live Secret <code>kafka-kraft</code> holds exactly this string, and all 3 controllers formatted their PVCs with it. Changing it stops the nodes from starting. Kept, with a comment saying never change. A real UUID needs the controller PVCs and <code>kafka-kraft</code> wiped (data loss).</p>
             </div>
           </li>
 
-          <li class="finding low">
+          <li class="finding low done">
             <div class="sev">LOW</div>
             <div>
               <h4>Two identical Grafana releases</h4>
               <p>Chart 7.3.2 deployed twice — in <code>logging</code> and in <code>monitoring</code> — both provisioning the same Loki datasource. Two UIs, two sets of dashboards, double the memory, and no clear answer to "which one do I open?"</p>
               <p class="fix"><b>Fix</b> Keep the one in <code>monitoring</code>, give it both datasources, delete <code>logging/grafana.yaml</code>.</p>
+              <p class="recheck"><span class="pill live">fixed</span><code>eef5d23</code>: <code>logging/grafana.yaml</code> deleted; the <code>monitoring</code> instance is the only one. It picked up the dashboard sidecar and the <code>random-logger</code> dashboard ConfigMap.</p>
             </div>
           </li>
 
-          <li class="finding low">
+          <li class="finding low done">
             <div class="sev">LOW</div>
             <div>
               <h4>redis-system is an empty namespace</h4>
               <p><code>redis.yaml</code> is commented out of the kustomization's resources list, so the directory reconciles a namespace and nothing else. The manifest still references <code>bitnamilegacy/redis</code>.</p>
               <p class="fix"><b>Fix</b> Re-enable it or remove the directory; a namespace with nothing in it is drift waiting to confuse.</p>
+              <p class="recheck"><span class="pill live">fixed</span><code>0450724</code>: re-enabled. Chart source now OCI <code>bitnamicharts</code>, image <code>bitnamilegacy/redis:7.2.4-debian-12-r9</code>, 1 master + 1 replica at 50m / 64Mi, auth from Terraform Secret <code>redis-auth</code>.</p>
             </div>
           </li>
 
-          <li class="finding low">
+          <li class="finding low done">
             <div class="sev">LOW</div>
             <div>
               <h4>The required managed_by label appears nowhere</h4>
               <p>CLAUDE.md mandates <code>managed_by: caveman</code> plus an environment key on all deployments. A grep across <code>clusters/</code> and <code>terraform/</code> returns zero matches — no namespace carries a <code>labels:</code> block at all.</p>
               <p class="fix"><b>Fix</b> Add <code>commonLabels</code> to each kustomization.yaml — one line per app directory, applied to everything beneath it.</p>
+              <p class="recheck"><span class="pill live">fixed</span><code>1da7770</code>: kustomize <code>labels:</code> (<code>includeSelectors: false</code>) in every app <code>kustomization.yaml</code>, plus <code>spec.commonMetadata.labels</code> on all 13 HelmReleases. <code>commonLabels</code> was not used, because it rewrites immutable selectors.</p>
             </div>
           </li>
 
-          <li class="finding low">
+          <li class="finding low done">
             <div class="sev">LOW</div>
             <div>
               <h4>readme.md documents a bootstrap path that does not exist</h4>
               <p>It advertises "all bootstrapped via Makefile" and hand-run <code>minikube start</code> commands; there is no Makefile, and Terraform is the real entry point. Version badges say minikube v1.33+ / k8s v1.28+ while Terraform pins v1.35.0.</p>
               <p class="fix"><b>Fix</b> Replace the Quick Start with <code>cd terraform &amp;&amp; terraform apply</code> and correct the badges.</p>
+              <p class="recheck"><span class="pill live">fixed</span><code>a622031</code>: rewritten around the Terraform bootstrap; badges now k8s v1.35.0 / Flux v2.9.5 / Terraform 1.15.2.</p>
             </div>
           </li>
 
@@ -579,6 +610,7 @@
               <h4>History shows three full Flux teardown cycles</h4>
               <p>The log carries <code>Uninstall Flux</code> → <code>Add Flux components</code> → <code>Add Flux sync</code> three separate times across 67 commits, alongside repeated <code>feat: update kafka config</code>. The bootstrap is being re-run to recover, rather than reconciled.</p>
               <p class="fix"><b>Fix</b> Once sizing and the Kafka secret are fixed, most of the churn source goes away.</p>
+              <p class="recheck"><span class="pill off">no action</span>History, nothing to change in code. Most of the causes behind that churn (Kafka sizing and secrets) are now fixed.</p>
             </div>
           </li>
 
@@ -589,7 +621,7 @@
         <h2>What holds</h2>
         <h3>Already right, leave it alone</h3>
         <ul class="clean">
-          <li><strong>Secret hygiene at the Terraform layer.</strong> <code>git ls-files terraform/</code> returns exactly three files: <code>main.tf</code>, <code>.tool-versions</code>, <code>secret.auto.tfvars.example</code>. State, tfvars, and <code>.env</code> are all present on disk and correctly ignored.</li>
+          <li><strong>Secret hygiene at the Terraform layer.</strong> <code>git ls-files terraform/</code> returns four files: <code>main.tf</code>, <code>secrets.tf</code> (generates app passwords, holds no secret values), <code>.tool-versions</code>, <code>secret.auto.tfvars.example</code>. State, tfvars, and <code>.env</code> are all present on disk and correctly ignored.</li>
           <li><strong><code>github_token</code> is a sensitive variable</strong> with no default, passed via <code>TF_VAR_github_token</code>.</li>
           <li><strong>Every chart version is pinned</strong> — no floating tags, no <code>latest</code> on a Helm chart anywhere in the repo.</li>
           <li><strong>Dependency ordering is explicit</strong> where it matters: <code>fluent-bit</code> declares <code>dependsOn: kafka</code>, and install/upgrade remediation retries are set on the fragile releases.</li>
@@ -601,7 +633,7 @@
       <section id="commands">
         <h2>Commands</h2>
         <h3>Working the cluster</h3>
-<pre><span class="c"># bring the lab up (cluster is currently down)</span>
+<pre><span class="c"># bring the lab up</span>
 cd terraform &amp;&amp; terraform init &amp;&amp; terraform apply
 
 <span class="c"># reconcile status / force a sync after push</span>
