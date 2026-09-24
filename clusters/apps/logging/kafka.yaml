@@ -51,6 +51,8 @@ spec:
       replicaCount: 3                     # strongly recommended
       persistence:
         enabled: true
+        # volumeClaimTemplates are immutable: changing size needs StatefulSet + PVC recreate (data loss).
+        # minikube hostPath does not enforce it anyway.
         size: 50Gi
       heapOpts: "-Xmx512m -Xms512m"
       resources:
@@ -115,9 +117,6 @@ spec:
           config:
             retention.ms: "604800000"     # 7 days
             min.insync.replicas: "2"
-
-    persistence:
-      size: 100Gi                         # real production value example
 
     # Optional – very useful
     metrics:
