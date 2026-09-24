@@ -233,11 +233,10 @@ spec:
         port: http
 
     resources:
-      limits:
-        cpu: 100m
-        memory: 128Mi
       requests:
-        cpu: 100m
+        cpu: 20m
+        memory: 48Mi
+      limits:
         memory: 128Mi
 
     ## only available if kind is Deployment

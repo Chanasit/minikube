@@ -628,7 +628,12 @@ spec:
       ## Prometheus server resource requests and limits
       ## Ref: http://kubernetes.io/docs/user-guide/compute-resources/
       ##
-      resources: {}
+      resources:
+        requests:
+          cpu: 50m
+          memory: 384Mi
+        limits:
+          memory: 1Gi
         # limits:
         #   cpu: 500m
         #   memory: 512Mi
@@ -1245,6 +1250,13 @@ spec:
       ##
       enabled: true
 
+      resources:
+        requests:
+          cpu: 10m
+          memory: 48Mi
+        limits:
+          memory: 128Mi
+
       persistence:
         size: 2Gi
 
@@ -1262,6 +1274,13 @@ spec:
       ##
       enabled: true
 
+      resources:
+        requests:
+          cpu: 10m
+          memory: 64Mi
+        limits:
+          memory: 128Mi
+
     ## prometheus-node-exporter sub-chart configurable values
     ## Please see https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-node-exporter
     ##
@@ -1269,6 +1288,13 @@ spec:
       ## If false, node-exporter will not be installed
       ##
       enabled: true
+
+      resources:
+        requests:
+          cpu: 10m
+          memory: 32Mi
+        limits:
+          memory: 64Mi
 
       rbac:
         pspEnabled: false
@@ -1283,6 +1309,13 @@ spec:
       ## If false, pushgateway will not be installed
       ##
       enabled: true
+
+      resources:
+        requests:
+          cpu: 10m
+          memory: 32Mi
+        limits:
+          memory: 64Mi
 
       # Optional service annotations
       serviceAnnotations:

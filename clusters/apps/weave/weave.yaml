@@ -33,5 +33,7 @@ spec:
     listOCIRepositories: true
     resources:
       requests:
-        cpu: 500m
-        memory: 512Mi
+        cpu: 20m
+        memory: 96Mi
+      limits:
+        memory: 256Mi

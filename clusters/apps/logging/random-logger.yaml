@@ -15,3 +15,9 @@ spec:
       containers:
       - name: random-logger
         image: chentex/random-logger:latest
+        resources:
+          requests:
+            cpu: 5m
+            memory: 8Mi
+          limits:
+            memory: 32Mi
