@@ -52,7 +52,13 @@ spec:
       persistence:
         enabled: true
         size: 50Gi
-      heapOpts: "-Xmx4g -Xms4g"           # example – tune per node size
+      heapOpts: "-Xmx512m -Xms512m"
+      resources:
+        requests:
+          cpu: 100m
+          memory: 768Mi
+        limits:
+          memory: 1Gi
 
     broker:
       replicaCount: 0                     # you can keep 0 if you want combined nodes
@@ -109,14 +115,6 @@ spec:
           config:
             retention.ms: "604800000"     # 7 days
             min.insync.replicas: "2"
-
-    resources:
-      requests:
-        cpu: 1500m
-        memory: 5Gi
-      limits:
-        cpu: 3500m
-        memory: 8Gi
 
     persistence:
       size: 100Gi                         # real production value example

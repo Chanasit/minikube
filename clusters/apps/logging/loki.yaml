@@ -860,7 +860,12 @@ spec:
       # -- volumeClaimTemplates to add to StatefulSet
       extraVolumeClaimTemplates: []
       # -- Resource requests and limits for the write
-      resources: {}
+      resources:
+        requests:
+          cpu: 20m
+          memory: 128Mi
+        limits:
+          memory: 512Mi
       # -- Grace period to allow the write to shutdown before it is killed. Especially for the ingester,
       # this must be increased. It must be long enough so writes can be gracefully shutdown flushing/transferring
       # all data and to successfully leave the member ring on shutdown.
@@ -1040,7 +1045,12 @@ spec:
       # -- Volumes to add to the read pods
       extraVolumes: []
       # -- Resource requests and limits for the read
-      resources: {}
+      resources:
+        requests:
+          cpu: 20m
+          memory: 96Mi
+        limits:
+          memory: 512Mi
       # -- Grace period to allow the read to shutdown before it is killed
       terminationGracePeriodSeconds: 30
       # -- Affinity for read pods. Passed through `tpl` and, thus, to be configured as string
@@ -1141,7 +1151,12 @@ spec:
       # -- Volumes to add to the backend pods
       extraVolumes: []
       # -- Resource requests and limits for the backend
-      resources: {}
+      resources:
+        requests:
+          cpu: 20m
+          memory: 160Mi
+        limits:
+          memory: 512Mi
       # -- Grace period to allow the backend to shutdown before it is killed. Especially for the ingester,
       # this must be increased. It must be long enough so backends can be gracefully shutdown flushing/transferring
       # all data and to successfully leave the member ring on shutdown.
@@ -1401,7 +1416,12 @@ spec:
             - ALL
         allowPrivilegeEscalation: false
       # -- Resource requests and limits for the gateway
-      resources: {}
+      resources:
+        requests:
+          cpu: 10m
+          memory: 32Mi
+        limits:
+          memory: 128Mi
       # -- Containers to add to the gateway pods
       extraContainers: []
       # -- Grace period to allow the gateway to shutdown before it is killed

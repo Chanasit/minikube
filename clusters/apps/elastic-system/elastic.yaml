@@ -50,10 +50,11 @@ spec:
     esJavaOpts: "-Xmx256m -Xms256m"
     resources:
       requests:
-        cpu: "200m"
-        memory: "0.5G"
+        cpu: 100m
+        memory: 640Mi
       limits:
-        memory: "1G"
+        cpu: null
+        memory: 1Gi
     keystore: {}
     # - secretName: ""
     lifecycle:
