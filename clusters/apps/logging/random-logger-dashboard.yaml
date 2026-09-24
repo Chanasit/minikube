@@ -1,5 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
+# Logs reach Loki via fluent-bit -> kafka -> promtail (job="kafka"): k8s metadata is in the JSON line,
+# not stream labels, so queries parse it with | json and pod is a regex textbox (label_values cannot list it).
 metadata:
   name: random-logger-dashboard
   labels:
@@ -11,13 +13,20 @@ data:
     {
       "uid": "random-logger",
       "title": "Random Logger",
-      "tags": ["logging", "loki", "random-logger"],
+      "tags": [
+        "logging",
+        "loki",
+        "random-logger"
+      ],
       "timezone": "browser",
       "schemaVersion": 35,
-      "version": 1,
+      "version": 2,
       "editable": false,
       "refresh": "30s",
-      "time": { "from": "now-1h", "to": "now" },
+      "time": {
+        "from": "now-1h",
+        "to": "now"
+      },
       "templating": {
         "list": [
           {
@@ -25,20 +34,20 @@ data:
             "label": "Datasource",
             "type": "datasource",
             "query": "loki",
-            "current": { "text": "Loki", "value": "Loki" }
+            "current": {
+              "text": "Loki",
+              "value": "Loki"
+            }
           },
           {
             "name": "pod",
-            "label": "Pod",
-            "type": "query",
-            "datasource": { "type": "loki", "uid": "${datasource}" },
-            "query": { "qryType": 1, "query": "label_values({namespace=\"logging\", container=\"random-logger\"}, pod)", "refId": "LokiVariableQueryEditor-VariableQuery" },
-            "definition": "label_values({namespace=\"logging\", container=\"random-logger\"}, pod)",
-            "refresh": 2,
-            "includeAll": true,
-            "multi": true,
-            "allValue": ".+",
-            "current": { "text": "All", "value": "$__all" }
+            "label": "Pod regex",
+            "type": "textbox",
+            "query": ".+",
+            "current": {
+              "text": ".+",
+              "value": ".+"
+            }
           },
           {
             "name": "level",
@@ -48,14 +57,20 @@ data:
             "includeAll": true,
             "multi": true,
             "allValue": ".+",
-            "current": { "text": "All", "value": "$__all" }
+            "current": {
+              "text": "All",
+              "value": "$__all"
+            }
           },
           {
             "name": "search",
             "label": "Search",
             "type": "textbox",
             "query": "",
-            "current": { "text": "", "value": "" }
+            "current": {
+              "text": "",
+              "value": ""
+            }
           }
         ]
       },
@@ -64,53 +79,180 @@ data:
           "id": 1,
           "type": "stat",
           "title": "Total lines",
-          "gridPos": { "x": 0, "y": 0, "w": 6, "h": 4 },
-          "datasource": { "type": "loki", "uid": "${datasource}" },
+          "gridPos": {
+            "x": 0,
+            "y": 0,
+            "w": 6,
+            "h": 4
+          },
+          "datasource": {
+            "type": "loki",
+            "uid": "${datasource}"
+          },
           "targets": [
-            { "refId": "A", "instant": true, "range": false, "expr": "sum(count_over_time({namespace=\"logging\", container=\"random-logger\", pod=~\"$pod\"}[$__range]))" }
+            {
+              "refId": "A",
+              "instant": true,
+              "range": false,
+              "expr": "sum(count_over_time({job=\"kafka\"} |= \"random-logger\" | json namespace=\"kubernetes.namespace_name\", container=\"kubernetes.container_name\", pod=\"kubernetes.pod_name\", msg=\"msg\" | namespace=\"logging\" | container=\"random-logger\" | pod=~\"$pod\" | line_format `{{.msg}}` | pattern `<_> <level> <_>` [$__range]))"
+            }
           ],
-          "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "value", "graphMode": "none" },
-          "fieldConfig": { "defaults": { "unit": "short", "color": { "mode": "fixed", "fixedColor": "blue" } }, "overrides": [] }
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "colorMode": "value",
+            "graphMode": "none"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short",
+              "color": {
+                "mode": "fixed",
+                "fixedColor": "blue"
+              }
+            },
+            "overrides": []
+          }
         },
         {
           "id": 2,
           "type": "stat",
           "title": "Errors",
-          "gridPos": { "x": 6, "y": 0, "w": 6, "h": 4 },
-          "datasource": { "type": "loki", "uid": "${datasource}" },
+          "gridPos": {
+            "x": 6,
+            "y": 0,
+            "w": 6,
+            "h": 4
+          },
+          "datasource": {
+            "type": "loki",
+            "uid": "${datasource}"
+          },
           "targets": [
-            { "refId": "A", "instant": true, "range": false, "expr": "sum(count_over_time({namespace=\"logging\", container=\"random-logger\", pod=~\"$pod\"} | pattern `<_> <level> <_>` | level=\"ERROR\" [$__range]))" }
+            {
+              "refId": "A",
+              "instant": true,
+              "range": false,
+              "expr": "sum(count_over_time({job=\"kafka\"} |= \"random-logger\" | json namespace=\"kubernetes.namespace_name\", container=\"kubernetes.container_name\", pod=\"kubernetes.pod_name\", msg=\"msg\" | namespace=\"logging\" | container=\"random-logger\" | pod=~\"$pod\" | line_format `{{.msg}}` | pattern `<_> <level> <_>` | level=\"ERROR\" [$__range]))"
+            }
           ],
-          "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "value", "graphMode": "none" },
-          "fieldConfig": { "defaults": { "unit": "short", "color": { "mode": "fixed", "fixedColor": "red" } }, "overrides": [] }
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "colorMode": "value",
+            "graphMode": "none"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short",
+              "color": {
+                "mode": "fixed",
+                "fixedColor": "red"
+              }
+            },
+            "overrides": []
+          }
         },
         {
           "id": 3,
           "type": "stat",
           "title": "Warnings",
-          "gridPos": { "x": 12, "y": 0, "w": 6, "h": 4 },
-          "datasource": { "type": "loki", "uid": "${datasource}" },
+          "gridPos": {
+            "x": 12,
+            "y": 0,
+            "w": 6,
+            "h": 4
+          },
+          "datasource": {
+            "type": "loki",
+            "uid": "${datasource}"
+          },
           "targets": [
-            { "refId": "A", "instant": true, "range": false, "expr": "sum(count_over_time({namespace=\"logging\", container=\"random-logger\", pod=~\"$pod\"} | pattern `<_> <level> <_>` | level=\"WARN\" [$__range]))" }
+            {
+              "refId": "A",
+              "instant": true,
+              "range": false,
+              "expr": "sum(count_over_time({job=\"kafka\"} |= \"random-logger\" | json namespace=\"kubernetes.namespace_name\", container=\"kubernetes.container_name\", pod=\"kubernetes.pod_name\", msg=\"msg\" | namespace=\"logging\" | container=\"random-logger\" | pod=~\"$pod\" | line_format `{{.msg}}` | pattern `<_> <level> <_>` | level=\"WARN\" [$__range]))"
+            }
           ],
-          "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "value", "graphMode": "none" },
-          "fieldConfig": { "defaults": { "unit": "short", "color": { "mode": "fixed", "fixedColor": "orange" } }, "overrides": [] }
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "colorMode": "value",
+            "graphMode": "none"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "short",
+              "color": {
+                "mode": "fixed",
+                "fixedColor": "orange"
+              }
+            },
+            "overrides": []
+          }
         },
         {
           "id": 4,
           "type": "stat",
           "title": "Error ratio",
-          "gridPos": { "x": 18, "y": 0, "w": 6, "h": 4 },
-          "datasource": { "type": "loki", "uid": "${datasource}" },
+          "gridPos": {
+            "x": 18,
+            "y": 0,
+            "w": 6,
+            "h": 4
+          },
+          "datasource": {
+            "type": "loki",
+            "uid": "${datasource}"
+          },
           "targets": [
-            { "refId": "A", "instant": true, "range": false, "expr": "sum(count_over_time({namespace=\"logging\", container=\"random-logger\", pod=~\"$pod\"} | pattern `<_> <level> <_>` | level=\"ERROR\" [$__range])) / sum(count_over_time({namespace=\"logging\", container=\"random-logger\", pod=~\"$pod\"}[$__range]))" }
+            {
+              "refId": "A",
+              "instant": true,
+              "range": false,
+              "expr": "sum(count_over_time({job=\"kafka\"} |= \"random-logger\" | json namespace=\"kubernetes.namespace_name\", container=\"kubernetes.container_name\", pod=\"kubernetes.pod_name\", msg=\"msg\" | namespace=\"logging\" | container=\"random-logger\" | pod=~\"$pod\" | line_format `{{.msg}}` | pattern `<_> <level> <_>` | level=\"ERROR\" [$__range])) / sum(count_over_time({job=\"kafka\"} |= \"random-logger\" | json namespace=\"kubernetes.namespace_name\", container=\"kubernetes.container_name\", pod=\"kubernetes.pod_name\", msg=\"msg\" | namespace=\"logging\" | container=\"random-logger\" | pod=~\"$pod\" | line_format `{{.msg}}` | pattern `<_> <level> <_>` [$__range]))"
+            }
           ],
-          "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "value", "graphMode": "none" },
+          "options": {
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "colorMode": "value",
+            "graphMode": "none"
+          },
           "fieldConfig": {
             "defaults": {
               "unit": "percentunit",
               "decimals": 1,
-              "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "orange", "value": 0.2 }, { "color": "red", "value": 0.4 } ] }
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "orange",
+                    "value": 0.2
+                  },
+                  {
+                    "color": "red",
+                    "value": 0.4
+                  }
+                ]
+              }
             },
             "overrides": []
           }
@@ -119,19 +261,104 @@ data:
           "id": 5,
           "type": "timeseries",
           "title": "Log rate by level",
-          "gridPos": { "x": 0, "y": 4, "w": 16, "h": 8 },
-          "datasource": { "type": "loki", "uid": "${datasource}" },
+          "gridPos": {
+            "x": 0,
+            "y": 4,
+            "w": 16,
+            "h": 8
+          },
+          "datasource": {
+            "type": "loki",
+            "uid": "${datasource}"
+          },
           "targets": [
-            { "refId": "A", "legendFormat": "{{level}}", "expr": "sum by (level) (count_over_time({namespace=\"logging\", container=\"random-logger\", pod=~\"$pod\"} | pattern `<_> <level> <_>` | level=~\"$level\" [$__interval]))" }
+            {
+              "refId": "A",
+              "legendFormat": "{{level}}",
+              "expr": "sum by (level) (count_over_time({job=\"kafka\"} |= \"random-logger\" | json namespace=\"kubernetes.namespace_name\", container=\"kubernetes.container_name\", pod=\"kubernetes.pod_name\", msg=\"msg\" | namespace=\"logging\" | container=\"random-logger\" | pod=~\"$pod\" | line_format `{{.msg}}` | pattern `<_> <level> <_>` | level=~\"$level\" [$__interval]))"
+            }
           ],
-          "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom"
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
           "fieldConfig": {
-            "defaults": { "unit": "short", "custom": { "drawStyle": "bars", "stacking": { "mode": "normal" }, "fillOpacity": 80 } },
+            "defaults": {
+              "unit": "short",
+              "custom": {
+                "drawStyle": "bars",
+                "stacking": {
+                  "mode": "normal"
+                },
+                "fillOpacity": 80
+              }
+            },
             "overrides": [
-              { "matcher": { "id": "byName", "options": "DEBUG" }, "properties": [ { "id": "color", "value": { "mode": "fixed", "fixedColor": "purple" } } ] },
-              { "matcher": { "id": "byName", "options": "INFO" }, "properties": [ { "id": "color", "value": { "mode": "fixed", "fixedColor": "green" } } ] },
-              { "matcher": { "id": "byName", "options": "WARN" }, "properties": [ { "id": "color", "value": { "mode": "fixed", "fixedColor": "orange" } } ] },
-              { "matcher": { "id": "byName", "options": "ERROR" }, "properties": [ { "id": "color", "value": { "mode": "fixed", "fixedColor": "red" } } ] }
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "DEBUG"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "mode": "fixed",
+                      "fixedColor": "purple"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "INFO"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "mode": "fixed",
+                      "fixedColor": "green"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "WARN"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "mode": "fixed",
+                      "fixedColor": "orange"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "ERROR"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "mode": "fixed",
+                      "fixedColor": "red"
+                    }
+                  }
+                ]
+              }
             ]
           }
         },
@@ -139,19 +366,106 @@ data:
           "id": 6,
           "type": "piechart",
           "title": "Level distribution",
-          "gridPos": { "x": 16, "y": 4, "w": 8, "h": 8 },
-          "datasource": { "type": "loki", "uid": "${datasource}" },
+          "gridPos": {
+            "x": 16,
+            "y": 4,
+            "w": 8,
+            "h": 8
+          },
+          "datasource": {
+            "type": "loki",
+            "uid": "${datasource}"
+          },
           "targets": [
-            { "refId": "A", "instant": true, "range": false, "legendFormat": "{{level}}", "expr": "sum by (level) (count_over_time({namespace=\"logging\", container=\"random-logger\", pod=~\"$pod\"} | pattern `<_> <level> <_>` | level=~\"$level\" [$__range]))" }
+            {
+              "refId": "A",
+              "instant": true,
+              "range": false,
+              "legendFormat": "{{level}}",
+              "expr": "sum by (level) (count_over_time({job=\"kafka\"} |= \"random-logger\" | json namespace=\"kubernetes.namespace_name\", container=\"kubernetes.container_name\", pod=\"kubernetes.pod_name\", msg=\"msg\" | namespace=\"logging\" | container=\"random-logger\" | pod=~\"$pod\" | line_format `{{.msg}}` | pattern `<_> <level> <_>` | level=~\"$level\" [$__range]))"
+            }
           ],
-          "options": { "pieType": "donut", "reduceOptions": { "calcs": ["lastNotNull"] }, "legend": { "displayMode": "table", "placement": "right", "values": ["value", "percent"] } },
+          "options": {
+            "pieType": "donut",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ]
+            },
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
+              "values": [
+                "value",
+                "percent"
+              ]
+            }
+          },
           "fieldConfig": {
-            "defaults": { "unit": "short" },
+            "defaults": {
+              "unit": "short"
+            },
             "overrides": [
-              { "matcher": { "id": "byName", "options": "DEBUG" }, "properties": [ { "id": "color", "value": { "mode": "fixed", "fixedColor": "purple" } } ] },
-              { "matcher": { "id": "byName", "options": "INFO" }, "properties": [ { "id": "color", "value": { "mode": "fixed", "fixedColor": "green" } } ] },
-              { "matcher": { "id": "byName", "options": "WARN" }, "properties": [ { "id": "color", "value": { "mode": "fixed", "fixedColor": "orange" } } ] },
-              { "matcher": { "id": "byName", "options": "ERROR" }, "properties": [ { "id": "color", "value": { "mode": "fixed", "fixedColor": "red" } } ] }
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "DEBUG"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "mode": "fixed",
+                      "fixedColor": "purple"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "INFO"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "mode": "fixed",
+                      "fixedColor": "green"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "WARN"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "mode": "fixed",
+                      "fixedColor": "orange"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "ERROR"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "mode": "fixed",
+                      "fixedColor": "red"
+                    }
+                  }
+                ]
+              }
             ]
           }
         },
@@ -159,24 +473,70 @@ data:
           "id": 7,
           "type": "timeseries",
           "title": "Log rate by pod",
-          "gridPos": { "x": 0, "y": 12, "w": 24, "h": 7 },
-          "datasource": { "type": "loki", "uid": "${datasource}" },
+          "gridPos": {
+            "x": 0,
+            "y": 12,
+            "w": 24,
+            "h": 7
+          },
+          "datasource": {
+            "type": "loki",
+            "uid": "${datasource}"
+          },
           "targets": [
-            { "refId": "A", "legendFormat": "{{pod}}", "expr": "sum by (pod) (rate({namespace=\"logging\", container=\"random-logger\", pod=~\"$pod\"} | pattern `<_> <level> <_>` | level=~\"$level\" [$__interval]))" }
+            {
+              "refId": "A",
+              "legendFormat": "{{pod}}",
+              "expr": "sum by (pod) (rate({job=\"kafka\"} |= \"random-logger\" | json namespace=\"kubernetes.namespace_name\", container=\"kubernetes.container_name\", pod=\"kubernetes.pod_name\", msg=\"msg\" | namespace=\"logging\" | container=\"random-logger\" | pod=~\"$pod\" | line_format `{{.msg}}` | pattern `<_> <level> <_>` | level=~\"$level\" [$__interval]))"
+            }
           ],
-          "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
-          "fieldConfig": { "defaults": { "unit": "suffix: lines/s", "custom": { "drawStyle": "line", "fillOpacity": 10 } }, "overrides": [] }
+          "options": {
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom"
+            },
+            "tooltip": {
+              "mode": "multi"
+            }
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "suffix: lines/s",
+              "custom": {
+                "drawStyle": "line",
+                "fillOpacity": 10
+              }
+            },
+            "overrides": []
+          }
         },
         {
           "id": 8,
           "type": "logs",
           "title": "Logs",
-          "gridPos": { "x": 0, "y": 19, "w": 24, "h": 12 },
-          "datasource": { "type": "loki", "uid": "${datasource}" },
+          "gridPos": {
+            "x": 0,
+            "y": 19,
+            "w": 24,
+            "h": 12
+          },
+          "datasource": {
+            "type": "loki",
+            "uid": "${datasource}"
+          },
           "targets": [
-            { "refId": "A", "expr": "{namespace=\"logging\", container=\"random-logger\", pod=~\"$pod\"} |~ `(?i)$search` | pattern `<_> <level> <_>` | level=~\"$level\"" }
+            {
+              "refId": "A",
+              "expr": "{job=\"kafka\"} |= \"random-logger\" | json namespace=\"kubernetes.namespace_name\", container=\"kubernetes.container_name\", pod=\"kubernetes.pod_name\", msg=\"msg\" | namespace=\"logging\" | container=\"random-logger\" | pod=~\"$pod\" | line_format `{{.msg}}` | pattern `<_> <level> <_>` | level=~\"$level\" |~ `(?i)$search`"
+            }
           ],
-          "options": { "showTime": true, "wrapLogMessage": true, "sortOrder": "Descending", "enableLogDetails": true, "dedupStrategy": "none" }
+          "options": {
+            "showTime": true,
+            "wrapLogMessage": true,
+            "sortOrder": "Descending",
+            "enableLogDetails": true,
+            "dedupStrategy": "none"
+          }
         }
       ]
     }
