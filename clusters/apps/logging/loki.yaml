@@ -886,13 +886,9 @@ spec:
       terminationGracePeriodSeconds: 300
       # -- Affinity for write pods. Passed through `tpl` and, thus, to be configured as string
       # @default -- Hard node and soft zone anti-affinity
-      affinity: |
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchLabels:
-                  {{- include "loki.writeSelectorLabels" . | nindent 10 }}
-              topologyKey: kubernetes.io/hostname
+      # single-node lab: chart default hard pod anti-affinity (hostname) keeps the new pod Pending
+      # during rolling updates until the old one is gone -> helm upgrade timeouts
+      affinity: ""
       # -- DNS config for write pods
       dnsConfig: {}
       # -- Node selector for write pods
@@ -965,20 +961,9 @@ spec:
       terminationGracePeriodSeconds: 30
       # -- Affinity for table-manager pods. Passed through `tpl` and, thus, to be configured as string
       # @default -- Hard node and soft zone anti-affinity
-      affinity: |
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchLabels:
-                  {{- include "loki.tableManagerSelectorLabels" . | nindent 10 }}
-              topologyKey: kubernetes.io/hostname
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 100
-              podAffinityTerm:
-                labelSelector:
-                  matchLabels:
-                    {{- include "loki.tableManagerSelectorLabels" . | nindent 12 }}
-                topologyKey: failure-domain.beta.kubernetes.io/zone
+      # single-node lab: chart default hard pod anti-affinity (hostname) keeps the new pod Pending
+      # during rolling updates until the old one is gone -> helm upgrade timeouts
+      affinity: ""
       # -- DNS config table-manager pods
       dnsConfig: {}
       # -- Node selector for table-manager pods
@@ -1069,13 +1054,9 @@ spec:
       terminationGracePeriodSeconds: 30
       # -- Affinity for read pods. Passed through `tpl` and, thus, to be configured as string
       # @default -- Hard node and soft zone anti-affinity
-      affinity: |
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchLabels:
-                  {{- include "loki.readSelectorLabels" . | nindent 10 }}
-              topologyKey: kubernetes.io/hostname
+      # single-node lab: chart default hard pod anti-affinity (hostname) keeps the new pod Pending
+      # during rolling updates until the old one is gone -> helm upgrade timeouts
+      affinity: ""
       # -- DNS config for read pods
       dnsConfig: {}
       # -- Node selector for read pods
@@ -1177,13 +1158,9 @@ spec:
       terminationGracePeriodSeconds: 300
       # -- Affinity for backend pods. Passed through `tpl` and, thus, to be configured as string
       # @default -- Hard node and soft zone anti-affinity
-      affinity: |
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchLabels:
-                  {{- include "loki.backendSelectorLabels" . | nindent 10 }}
-              topologyKey: kubernetes.io/hostname
+      # single-node lab: chart default hard pod anti-affinity (hostname) keeps the new pod Pending
+      # during rolling updates until the old one is gone -> helm upgrade timeouts
+      affinity: ""
       # -- DNS config for backend pods
       dnsConfig: {}
       # -- Node selector for backend pods
@@ -1271,13 +1248,9 @@ spec:
       terminationGracePeriodSeconds: 30
       # -- Affinity for single binary pods. Passed through `tpl` and, thus, to be configured as string
       # @default -- Hard node and soft zone anti-affinity
-      affinity: |
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchLabels:
-                  {{- include "loki.singleBinarySelectorLabels" . | nindent 10 }}
-              topologyKey: kubernetes.io/hostname
+      # single-node lab: chart default hard pod anti-affinity (hostname) keeps the new pod Pending
+      # during rolling updates until the old one is gone -> helm upgrade timeouts
+      affinity: ""
       # -- DNS config for single binary pods
       dnsConfig: {}
       # -- Node selector for single binary pods
@@ -1442,13 +1415,9 @@ spec:
       terminationGracePeriodSeconds: 30
       # -- Affinity for gateway pods. Passed through `tpl` and, thus, to be configured as string
       # @default -- Hard node and soft zone anti-affinity
-      affinity: |
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchLabels:
-                  {{- include "loki.gatewaySelectorLabels" . | nindent 10 }}
-              topologyKey: kubernetes.io/hostname
+      # single-node lab: chart default hard pod anti-affinity (hostname) keeps the new pod Pending
+      # during rolling updates until the old one is gone -> helm upgrade timeouts
+      affinity: ""
       # -- DNS config for gateway pods
       dnsConfig: {}
       # -- Node selector for gateway pods
